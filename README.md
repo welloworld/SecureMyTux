@@ -1,1 +1,2 @@
-wello
+Requirements:
+*package 'gcc'
