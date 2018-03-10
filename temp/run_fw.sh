@@ -1,0 +1,3 @@
+
+
+sudo insmod fw.ko 
