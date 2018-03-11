@@ -68,7 +68,7 @@ class Manager(object):
 	@staticmethod
 	def activate_project():
 		""" This function activates the project with the current 'Globals.project_components_info' """
-		firewall_activation = './run_fw.sh'
+		firewall_activation = 'sudo insmod fw.ko'
 		fw_param = {'features_string_arg':'', 'fe_len':0,'blacklist_string_arg':'', 'bl_len':0}
 		shm_activation = ['./run_shm.sh']
 		extra = ''
@@ -86,17 +86,12 @@ class Manager(object):
 			fw_param['features_string_arg'] += 'R'
 			fw_param['fe_len'] += 1
 			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
-		
 		#Run Firewall
-		call([firewall_activation,#run firewall
-		'features_string_arg='+fw_param['features_string_arg'], 'fe_len='+fw_param['fe_len'],#components parameters
-		'blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'], 'bl_len='+ Globals.project_components_info[blacklist]['length'],#blacklist parameters
-		extra], shell = True)# rdhcp server ip parameters
 		
-		#Run Syscall Hooking Manager
-		if Globals.project_components_info[SHM][power_state_on] == True:
-			call([shm_activation])
-
+        call([firewall_activation,'features_string_arg='+fw_param['features_string_arg'], 'fe_len='+str(fw_param['fe_len']),'blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'], 'bl_len='+ str(Globals.project_components_info[blacklist]['length']),extra], shell = True)# rdhcp server ip parameters
+        if Globals.project_components_info[SHM][power_state_on] == True:
+        	call([shm_activation])
+        	
 		Globals.is_project_on = True
 			
 	@staticmethod
