@@ -1,3 +1,2 @@
 
-
-sudo insmod fw.ko 
+sudo insmod fw.ko  

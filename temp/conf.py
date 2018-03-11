@@ -91,7 +91,7 @@ class Manager(object):
 		call([firewall_activation,#run firewall
 		'features_string_arg='+fw_param['features_string_arg'], 'fe_len='+fw_param['fe_len'],#components parameters
 		'blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'], 'bl_len='+ Globals.project_components_info[blacklist]['length'],#blacklist parameters
-		extra])# rdhcp server ip parameters
+		extra], shell = True)# rdhcp server ip parameters
 		
 		#Run Syscall Hooking Manager
 		if Globals.project_components_info[SHM][power_state_on] == True:
