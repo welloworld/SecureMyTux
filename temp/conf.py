@@ -4,6 +4,9 @@ import Tkinter as tk
 import sys
 sys.path.insert(0, 'tools/') #Import inside directory python codes
 
+from subprocess import call
+import pickle
+
 from summarize_permissions import perms
 from summarize_sudoers import sudoers_info
 from logged_in import w_info
@@ -25,63 +28,87 @@ class Globals(object):
 	checkbutton_height = 3
 	checkbutton_width = 30
 
+	is_project_on = False
 	# a dictionary containing which components of the project should run and what parameters to pass them
 	project_components_info = {
 		ARP: {power_state_on : True}#features_string_arg=A,fe_len=1
 		,DOS: {power_state_on : True}#features_string_arg=D,fe_len=1
-		,RDHCP: {power_state_on : False, 'server_address': None}#features_string_arg=R,fe_len=1 | dhcp_server_ip_arg="aaaa" server_len=4 //NOTICE: I think we changed aaaa addresses to 192.168.1.12 style
+		,RDHCP: {power_state_on : False, 'server_address': ''}#features_string_arg=R,fe_len=1 | dhcp_server_ip_arg="aaaa" server_len=4 //NOTICE: I think we changed aaaa addresses to 192.168.1.12 style
 		,SHM: {power_state_on : True}
 		,blacklist: {'addresses': '', 'length': 0}#blacklist_string_arg="192.168.1.12,11:22:33:44:55:dd,10.0.1.25" bl_len=3
 		}
 
 
 #-------------------------------- Run State Configuration ------------------------------#
-STATE_CONF_FILE = '.project_run_configuration'
+STATE_CONF_FILE = '.project_run_configuration'#will be a .pkl file
 
 
 #--------------------------------- Helper functions -------------------------------------#
 
 class Manager(object):
 
+	@staticmethod
 	def load_state_conf():
-	""" This function loads project-run configuration from 'STATE_CONF_FILE' into 'cur_run_state' """
-	with open(STATE_CONF_FILE, 'r') as f:
-		pass
+		""" This function loads project-run configuration from 'STATE_CONF_FILE' into 'Globals.project_components_info' """
+		with open(STATE_CONF_FILE, 'rb') as f:
+			Globals.project_components_info = pickle.load(f)
 
-
+	@staticmethod
 	def save_state_conf():
-		""" This function converts 'cur_run_state' and saves it into 'STATE_CONF_FILE' """
-		pass
+		""" This function converts 'Globals.project_components_info' and saves it into 'STATE_CONF_FILE' """
+		with open(STATE_CONF_FILE, 'wb') as f:
+			pickle.dump(Globals.project_components_info, f, 1)#1 stands for backwards compatible pickling in binary
 
-
+	@staticmethod
 	def change_state_conf(conf):
 		""" This function gets a dictionary with component names as keys and state changes as value.
 		Example: {}"""
 		pass
 
-	def activate_component():
-		""" This function activates the project with the current 'project_components_info' """
+	@staticmethod
+	def activate_project():
+		""" This function activates the project with the current 'Globals.project_components_info' """
 		firewall_activation = './run_fw.sh'
-		fw_param = {'features_string_arg':'', 'fe_len':0,}
+		fw_param = {'features_string_arg':'', 'fe_len':0,'blacklist_string_arg':'', 'bl_len':0}
 		shm_activation = ['./run_shm.sh']
+		extra = ''
 
+		#Activate Firewall
+		if True == Globals.project_components_info[ARP][power_state_on]:
+			fw_param['features_string_arg'] += 'A'
+			fw_param['fe_len'] += 1
+			
+		elif True == Globals.project_components_info[DOS][power_state_on]:
+			fw_param['features_string_arg'] += 'D'
+			fw_param['fe_len'] += 1
+			
+		elif True == Globals.project_components_info[RDHCP][power_state_on]:
+			fw_param['features_string_arg'] += 'R'
+			fw_param['fe_len'] += 1
+			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
+		
+		#Run Firewall
+		call([firewall_activation,#run firewall
+		'features_string_arg='+fw_param['features_string_arg'], 'fe_len='+fw_param['fe_len'],#components parameters
+		'blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'], 'bl_len='+ Globals.project_components_info[blacklist]['length'],#blacklist parameters
+		extra])# rdhcp server ip parameters
+		
+		#Run Syscall Hooking Manager
+		if Globals.project_components_info[SHM][power_state_on] == True:
+			call([shm_activation])
 
-		for comp,info in project_components_info.items():
-			if info[power_state_on] == True:
-				if comp == ARP:
-					fw_param['features_string_arg'] += 'A'
-				elif comp == DOS:
-					fw_param['features_string_arg'] += 'D'
-				elif comp == RDHCP:
-					fw_param['features_string_arg'] += 'R'
+		Globals.is_project_on = True
+			
+	@staticmethod
+	def clear_project():
+		""" Shutdown project. remove Firewall and Syscall Hooking Manager. """
+		#shutdown components
+		Globals.is_project_on = False
+			
+	@staticmethod
+	def restart_project():
+		""" First clears project than starts it back on. Made for applying conf changes! """
+		Globals.clear_project()
+		Globals.activate_project()
 
-
-				elif comp == SHM:
-					pass #make sure activate shm part
-
-				elif comp == blacklist:
-					pass
-
-				 
-
-
+		
