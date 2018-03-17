@@ -167,7 +167,7 @@ class FeatureControlScreen(object):
 		Manager.save_state_conf()
 		
 		#Restarts the project with the new settings
-		Manager.restart_project()
+		Manager.restart_project(main)
 
 	def switch_to_edit_blacklist_screen(self):
 		""" This function is responsible for the functionality of Turn On\Off button """
@@ -177,12 +177,15 @@ class FeatureControlScreen(object):
 
 class MainScreen(object):
 	""" Represents the first screen in the GUI. The general menu. """
+
 	def __init__(self, master):
 		self.master = master
 		self.frame = tk.Frame(master)
 		self.screens = []
+		self.project_state = tk.StringVar()
 		# create Turn On\Off button in screen
-		switch_button = tk.Button(self.frame, text = 'Turn On\Turn Off', command = self.switch_callback, width = Globals.button_width, height = Globals.button_height)
+		self.project_state.set('Turn On')
+		switch_button = tk.Button(self.frame, textvariable = self.project_state, command = self.switch_callback, width = Globals.button_width, height = Globals.button_height)
 		switch_button.grid(row = 0, column = 0)
 
 		# create View Logs button in screen
@@ -202,9 +205,9 @@ class MainScreen(object):
 	def switch_callback(self):
 		""" This function is responsible for the functionality of Turn On\Off button """
 		if True == Globals.is_project_on:
-			Manager.clear_project()
+			Manager.clear_project(self)
 		else:
-			Manager.activate_project()
+			Manager.activate_project(self)
 
 	def switch_to_view_logs_screen(self):
 		""" This function is responsible for opening/switching to the view logs screen """
@@ -220,13 +223,21 @@ class MainScreen(object):
 		""" This function is callback to an exit attempt by the user """
 		self.master.quit()
 		self.master.destroy()
-		
+
+	def flip_switch_button(self):
+		""" Changes the switch button to Off and On"""
+		if Globals.is_project_on == True:
+			self.project_state.set('Turn Off')
+		else:
+			self.project_state.set('Turn On')
+
 
 def main():
+	global main
 
 	master = tk.Tk()
 	Manager.load_state_conf()
-	MainScreen(master)
+	main = MainScreen(master)
 	master.mainloop()
 	"""
 	perms(['1000'])

@@ -16,9 +16,9 @@ def printable_list(data):
 	s = ''
 
 	for val in data:
-		s += val + '\n'
+		s += val + ','
 
-	return s
+	return s[:-1]
 
 
 def perms(users):
@@ -35,14 +35,16 @@ def perms(users):
 		res += '[***]USERNAME:'
 		names = split_to_strings(get_pair_value(name))
 		res += printable_list(names)
+		res += '\n'
 
 		res += '[***]GID:'
 		gids = split_to_strings(get_pair_value(gid))
 		res += printable_list(gids)
+		res += '\n'
 
 		res += '[***]Groups:'
 		groups_list = split_to_strings(get_pair_value(groups))
-		res += printable_list(groups_list).replace('\n', ',')[:-1]
+		res += printable_list(groups_list)
 		res += '\n\n'
 
 	return res

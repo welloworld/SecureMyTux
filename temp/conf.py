@@ -65,7 +65,7 @@ class Manager(object):
 			pickle.dump(Globals.project_components_info, f, 1)#1 stands for backwards compatible pickling in binary
 
 	@staticmethod
-	def activate_project():
+	def activate_project(main_window):
 		""" This function activates the project with the current 'Globals.project_components_info' """
 		firewall_activation = 'sudo insmod fw.ko '
 		fw_param = {'features_string_arg':'', 'fe_len':0,'blacklist_string_arg':'', 'bl_len':0}
@@ -93,23 +93,29 @@ class Manager(object):
 			call(shm_activation, shell = True)
 			
 		Globals.is_project_on = True
+		main_window.flip_switch_button()
 			
 	@staticmethod
-	def clear_project():
+	def clear_project(main_window):
 		""" Shutdown project. remove Firewall and Syscall Hooking Manager. """
 		fw_deactivation = 'sudo rmmod fw.ko'
 		shm_deactivation = 'sudo rmmod shm.ko'
 		
 		#shutdown components
-		call(shm_deactivation, shell = True)
 		call(fw_deactivation, shell = True)
+
+		if Globals.project_components_info[SHM][power_state_on]:
+			call(shm_deactivation, shell = True)
+		
 		
 		Globals.is_project_on = False
+		main_window.flip_switch_button()
 			
 	@staticmethod
-	def restart_project():
+	def restart_project(main_window):
 		""" First clears project than starts it back on. Made for applying conf changes! """
-		Manager.clear_project()
-		Manager.activate_project()
+		if Globals.is_project_on == True:
+			Manager.clear_project(main_window)
+			Manager.activate_project(main_window)
 
 		
