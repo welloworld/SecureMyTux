@@ -104,7 +104,6 @@ class FeatureControlScreen(object):
 			Globals.project_components_info[name][power_state_on] = state_var.get()
 		
 		Globals.project_components_info[RDHCP][dhcp_server] = self.addr_input.get()
-		print self.addr_input.get()
 		
 		#saves the configuration 
 		Manager.save_state_conf()

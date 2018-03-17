@@ -103,8 +103,8 @@ class Manager(object):
 		shm_deactivation = 'sudo rmmod shm.ko'
 		
 		#shutdown components
-		call(shm_deactivation)
-		call(fw_deactivation)
+		call(shm_deactivation, shell = True)
+		call(fw_deactivation, shell = True)
 		
 		Globals.is_project_on = False
 			
