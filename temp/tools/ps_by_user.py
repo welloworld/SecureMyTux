@@ -23,25 +23,33 @@ def parse_ps_output(out):
 	return parsed_output
 	
 	
-def print_ps_command_info(data):
-	""" This function gets parsed data from ps shell command and prints it"""
+def printable_ps_command_info(data):
+	""" This function gets parsed data from ps shell command and returns a printable version of it"""
+	s = ''
+
 	for line in data:
-		print 'PID: %s' % (line[1])
-		print 'Percentage of the CPU: %s' % (line[2])
-		print 'Stat of process: %s' % (line[7])
-		print 'Start time of the process: %s' % (line[8])
-		print 'Running time of the process: %s' % (line[9])
-		print 'The command itself: %s' % (' '.join(line[10:]))
-		print '*****************************************************'
+		s += 'PID: %s' % (line[1]) + '\n'
+		s += 'Percentage of the CPU: %s' % (line[2]) + '\n'
+		s += 'Stat of process: %s' % (line[7]) + '\n'
+		s += 'Start time of the process: %s' % (line[8]) + '\n'
+		s += 'Running time of the process: %s' % (line[9]) + '\n'
+		s += 'The command itself: %s' % (' '.join(line[10:])) + '\n'
+		s += '*****************************************************' + '\n'
+
+	return s
 
 	
-def ps(username):
+def ps(usernames):
 
-	#run ps shell command and get its info for specific user into 'out' variable
-	dmesg = subprocess.Popen(['ps -aux | grep "^' + get_shortened_username(username) + '"'], stdout=subprocess.PIPE, shell=True)#Are you sure we want ps -aux? probably dont need all processes
-	(out, err) = dmesg.communicate()
+	string = ''
 
-	data = parse_ps_output(out)
-	print_ps_command_info(data)
+	for username in usernames:
+		#run ps shell command and get its info for specific user into 'out' variable
+		dmesg = subprocess.Popen(['ps -aux | grep "^' + get_shortened_username(username) + '"'], stdout=subprocess.PIPE, shell=True)#Are you sure we want ps -aux? probably dont need all processes
+		(out, err) = dmesg.communicate()
 
+		data = parse_ps_output(out)
+		string += printable_ps_command_info(data)
+
+	return string
 	

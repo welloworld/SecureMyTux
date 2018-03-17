@@ -6,4 +6,4 @@ def sudoers_info():
 
 	res = subprocess.Popen([bash_to_extract_sudoers], stdout=subprocess.PIPE, shell=True)
 	(out, err) = res.communicate()
-	print out
+	return 'The users who can run sudo permissions are:\n' + out

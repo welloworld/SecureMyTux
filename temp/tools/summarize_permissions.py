@@ -11,13 +11,19 @@ def split_to_strings(data):
 	return re.findall('[a-zA-Z]+', data)
         
 
-def print_list(data):
+def printable_list(data):
 	""" Get a list and print it """
+	s = ''
+
 	for val in data:
-		print val
+		s += val + '\n'
+
+	return s
 
 
 def perms(users):
+
+	res = ''
 
 	for user in users:
 		#get info about user with the bash 'id' command
@@ -26,15 +32,17 @@ def perms(users):
 		name, gid, groups = out.replace('\n','').split(' ')#split the id result into uid, gid, groups
 	    
 		# print the information
-		print '[***]USERNAME:'
+		res += '[***]USERNAME:'
 		names = split_to_strings(get_pair_value(name))
-		print_list(names)
+		res += printable_list(names)
 
-		print '[***]GID:'
+		res += '[***]GID:'
 		gids = split_to_strings(get_pair_value(gid))
-		print_list(gids)
+		res += printable_list(gids)
 
-		print '[***]Groups:'
+		res += '[***]Groups:'
 		groups_list = split_to_strings(get_pair_value(groups))
-		print_list(groups_list)
-		print
+		res += printable_list(groups_list).replace('\n', ',')[:-1]
+		res += '\n\n'
+
+	return res

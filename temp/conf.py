@@ -4,6 +4,7 @@ import Tkinter as tk
 import sys
 sys.path.insert(0, 'tools/') #Import inside directory python codes
 
+import subprocess
 from subprocess import call
 import pickle
 
@@ -39,6 +40,9 @@ class Globals(object):
 		,blacklist: {'addresses': '', 'length': 0}#blacklist_string_arg="192.168.1.12,11:22:33:44:55:dd,10.0.1.25" bl_len=3
 		}
 
+	# used in ViewLogsScreen in order to let the user choose users
+	selected_users = {}
+
 
 #-------------------------------- Run State Configuration ------------------------------#
 STATE_CONF_FILE = '.project_run_configuration'#will be a .pkl file
@@ -59,12 +63,6 @@ class Manager(object):
 		""" This function converts 'Globals.project_components_info' and saves it into 'STATE_CONF_FILE' """
 		with open(STATE_CONF_FILE, 'wb') as f:
 			pickle.dump(Globals.project_components_info, f, 1)#1 stands for backwards compatible pickling in binary
-
-	@staticmethod
-	def change_state_conf(conf):
-		""" This function gets a dictionary with component names as keys and state changes as value.
-		Example: {}"""
-		pass
 
 	@staticmethod
 	def activate_project():

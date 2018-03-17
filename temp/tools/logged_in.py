@@ -16,15 +16,25 @@ def parse_w_output(out):
 		
 	return parsed_output
 	
-def print_w_command_info(data):
-	""" This function gets parsed data from w shell command and prints it"""
+def printable_w_command_info(data):
+	""" This function gets parsed data from w shell command and returns a print oriented string of it"""
+	string = ''
+
 	for line in data:
-		print 'User: %s' % (line[0])
-		print 'Terminal type: %s' % (line[1])
-		print 'Path to TTY for the user: %s' % (line[2])
-		print 'Last hard login from the user: %s' % (line[3])
-		print 'The user has been connected for: %s' % (line[4])
-		print 'Total time the CPU used by the user: %s' % (line[5])
+		string += 'User: %s' % (line[0])
+		string += '\n'
+		string += 'Terminal type: %s' % (line[1])
+		string += '\n'
+		string += 'Path to TTY for the user: %s' % (line[2])
+		string += '\n'
+		string += 'Last hard login from the user: %s' % (line[3])
+		string += '\n'
+		string += 'The user has been connected for: %s' % (line[4])
+		string += '\n'
+		string += 'Total time the CPU used by the user: %s' % (line[5])
+		string += '\n'
+
+	return string
 
 	
 def w_info():
@@ -33,5 +43,5 @@ def w_info():
 	(out, err) = dmesg.communicate()
 
 	data = parse_w_output(out)
-	print_w_command_info(data)
+	return printable_w_command_info(data)
 	

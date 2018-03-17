@@ -32,6 +32,36 @@ class BlacklistScreen(object):
 		""" This function is responsible for adding addresses to the blacklist """
 		pass
 	
+
+class SelectUsersScreen(object):
+	
+	def __init__(self, master):
+		self.master = master
+		self.frame = tk.Frame(master)
+
+		dmesg = subprocess.Popen(['getent passwd | cut -d : -f 1'], stdout=subprocess.PIPE, shell=True)
+		(out, err) = dmesg.communicate()
+
+		cur_column = 0
+		cur_row = 0
+		# create a switch button for each component
+		for username in out.split('\n')[:-1]:
+			var = tk.BooleanVar()
+			Globals.selected_users[username] = var
+
+			state = tk.Checkbutton(self.frame, text = username, variable = Globals.selected_users[username], 
+				 onvalue = 1, offvalue = 0, height = Globals.checkbutton_height, width = Globals.checkbutton_width 
+				)
+			state.grid(row = cur_row, column = cur_column, sticky = tk.W)
+			
+			cur_column += 1
+			if cur_column == 6:
+				cur_row += 1
+				cur_column = 0
+
+		self.frame.pack()
+
+
 #change buttons to checkbuttons to show logs and add functionaliy
 class ViewLogsScreen(object):
 
@@ -41,21 +71,49 @@ class ViewLogsScreen(object):
 
 		cur_column = 0
 		# create view logs buttons in screen
-		for component_name in Globals.project_components_info:
-			view_log_button = tk.Button(self.frame, text = component_name, command = self.show_log_callback, width = Globals.button_width, height = Globals.button_height)
-			view_log_button.grid(row = 0, column = cur_column)
-			cur_column += 1
+		# Logged in users button
+		logged_in_users_button = tk.Button(self.frame, text = 'Logged in users', command = lambda: self.view_log_callback(w_info), width = Globals.button_width, height = Globals.button_height)
+		logged_in_users_button.grid(row = 0, column = cur_column)
+		cur_column += 1
 
-		log_view = tk.Text(self.frame, height = 20)
-		log_view.grid(row = 1, columnspan = cur_column)
+		# Sudoers group button
+		sudoers_info_button = tk.Button(self.frame, text = 'Sudoers group', command = lambda: self.view_log_callback(sudoers_info), width = Globals.button_width, height = Globals.button_height)
+		sudoers_info_button.grid(row = 0, column = cur_column)
+		cur_column += 1		
+
+		# Users permissions button
+		users_permissions_button = tk.Button(self.frame, text = 'Users permissions', command = lambda: self.view_log_callback(perms, func_param = self.get_users_from_user()), width = Globals.button_width, height = Globals.button_height)
+		users_permissions_button.grid(row = 0, column = cur_column)
+		cur_column += 1
+
+		# Processes view by users button
+		users_processes_history_button = tk.Button(self.frame, text = 'User processes history', command = lambda: self.view_log_callback(ps, func_param = self.get_users_from_user()), width = Globals.button_width, height = Globals.button_height)
+		users_processes_history_button.grid(row = 0, column = cur_column)
+		cur_column += 1
+		 
+
+		self.log_view = tk.Text(self.frame, height = 20)
+		self.log_view.grid(row = 1, columnspan = cur_column)
 
 		self.frame.pack()
 
-	def show_log_callback(self):
-		""" This function is responsible for showing the requested log """
-		pass
+	def view_log_callback(self, func, func_param = None):
+		""" This function shows a log of all connected users """
+		beginning = '1.0'# location to insert text
+		self.log_view.delete(beginning, tk.END)
+		if func_param == None:
+			self.log_view.insert(beginning, func())
+		else:
+			self.log_view.insert(beginning, func(func_param))
 
-#TODO: add input field to enter dhcp server address
+	def get_users_from_user(self):
+		""" Let the user choose which users he is interested in and return his choice"""
+		s = tk.Toplevel(self.master)
+		SelectUsersScreen(s)
+		self.master.wait_window(s)
+		return filter(lambda x: Globals.selected_users[x].get() == True, Globals.selected_users)
+
+
 class FeatureControlScreen(object):
 
 	state_buttons = []
