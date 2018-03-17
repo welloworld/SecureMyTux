@@ -1,7 +1,8 @@
 #!/usr/bin/python2
 from conf import *
 		
-
+#fix gui layout
+#add functionality
 class BlacklistScreen(object):
 	
 	def __init__(self, master):
@@ -31,7 +32,7 @@ class BlacklistScreen(object):
 		""" This function is responsible for adding addresses to the blacklist """
 		pass
 	
-	
+#change buttons to checkbuttons to show logs and add functionaliy
 class ViewLogsScreen(object):
 
 	def __init__(self, master):
@@ -54,7 +55,7 @@ class ViewLogsScreen(object):
 		""" This function is responsible for showing the requested log """
 		pass
 
-
+#TODO: add input field to enter dhcp server address
 class FeatureControlScreen(object):
 
 	state_buttons = []
@@ -76,12 +77,21 @@ class FeatureControlScreen(object):
 			
 			if True == info[power_state_on]:
 					state.toggle()#check button on
-			
+		
+		t = tk.StringVar()
+		t.set('DHCP server ip:')
+		label = tk.Label(self.frame, textvariable = t)
+		label.grid(row = cur_row, sticky = 'w')
+		self.addr_input = tk.Entry(self.frame)
+		self.addr_input.grid(row = cur_row, sticky = 'e')
+		
 		# create save button in screen
+		cur_row += 1
 		save_button = tk.Button(self.frame, text = 'Save changes', command = self.save_callback, width = Globals.button_width, height = Globals.button_height)
 		save_button.grid(row = cur_row, column = 0)
-		cur_row += 1
+		
 		# create edit blacklist button in screen
+		cur_row += 1
 		edit_blacklist_button = tk.Button(self.frame, text = 'Edit blacklist', command = self.switch_to_edit_blacklist_screen, width = Globals.button_width, height = Globals.button_height)
 		edit_blacklist_button.grid(row = cur_row, column = 0)
 		
@@ -89,13 +99,18 @@ class FeatureControlScreen(object):
 
 	def save_callback(self):
 		""" This function saves changes made to the components state """
-		#TODO: commit changes to Globals.project_components_info
+		#Commit changes to Globals.project_components_info
 		for name,state_var in self.state_buttons:
 			Globals.project_components_info[name][power_state_on] = state_var.get()
-			print name, state_var.get()
 		
+		Globals.project_components_info[RDHCP][dhcp_server] = self.addr_input.get()
+		print self.addr_input.get()
+		
+		#saves the configuration 
 		Manager.save_state_conf()
-		#Manager.restart_project()
+		
+		#Restarts the project with the new settings
+		Manager.restart_project()
 
 	def switch_to_edit_blacklist_screen(self):
 		""" This function is responsible for the functionality of Turn On\Off button """

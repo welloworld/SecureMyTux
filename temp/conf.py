@@ -20,6 +20,7 @@ ARP = 'arp'
 RDHCP = 'rogue dhcp'
 SHM = 'syscall hooking manager'
 blacklist = 'blacklist'
+dhcp_server = 'server_address'
 
 class Globals(object):
 
@@ -33,7 +34,7 @@ class Globals(object):
 	project_components_info = {
 		ARP: {power_state_on : True}#features_string_arg=A,fe_len=1
 		,DOS: {power_state_on : True}#features_string_arg=D,fe_len=1
-		,RDHCP: {power_state_on : False, 'server_address': ''}#features_string_arg=R,fe_len=1 | dhcp_server_ip_arg="aaaa" server_len=4 //NOTICE: I think we changed aaaa addresses to 192.168.1.12 style
+		,RDHCP: {power_state_on : False, dhcp_server: ''}#features_string_arg=R,fe_len=1 | dhcp_server_ip_arg="aaaa" server_len=4 //NOTICE: I think we changed aaaa addresses to 192.168.1.12 style
 		,SHM: {power_state_on : True}
 		,blacklist: {'addresses': '', 'length': 0}#blacklist_string_arg="192.168.1.12,11:22:33:44:55:dd,10.0.1.25" bl_len=3
 		}
@@ -68,9 +69,9 @@ class Manager(object):
 	@staticmethod
 	def activate_project():
 		""" This function activates the project with the current 'Globals.project_components_info' """
-		firewall_activation = 'sudo insmod fw.ko'
+		firewall_activation = 'sudo insmod fw.ko '
 		fw_param = {'features_string_arg':'', 'fe_len':0,'blacklist_string_arg':'', 'bl_len':0}
-		shm_activation = ['./run_shm.sh']
+		shm_activation = './run_shm.sh'
 		extra = ''
 
 		#Activate Firewall
@@ -86,24 +87,31 @@ class Manager(object):
 			fw_param['features_string_arg'] += 'R'
 			fw_param['fe_len'] += 1
 			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
-		#Run Firewall
 		
-        call([firewall_activation,'features_string_arg='+fw_param['features_string_arg'], 'fe_len='+str(fw_param['fe_len']),'blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'], 'bl_len='+ str(Globals.project_components_info[blacklist]['length']),extra], shell = True)# rdhcp server ip parameters
-        if Globals.project_components_info[SHM][power_state_on] == True:
-        	call([shm_activation])
-        	
+		#Run Firewall
+		call(firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'] + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra, shell = True)# rdhcp server ip parameters
+		
+		if Globals.project_components_info[SHM][power_state_on] == True:
+			call(shm_activation, shell = True)
+			
 		Globals.is_project_on = True
 			
 	@staticmethod
 	def clear_project():
 		""" Shutdown project. remove Firewall and Syscall Hooking Manager. """
+		fw_deactivation = 'sudo rmmod fw.ko'
+		shm_deactivation = 'sudo rmmod shm.ko'
+		
 		#shutdown components
+		call(shm_deactivation)
+		call(fw_deactivation)
+		
 		Globals.is_project_on = False
 			
 	@staticmethod
 	def restart_project():
 		""" First clears project than starts it back on. Made for applying conf changes! """
-		Globals.clear_project()
-		Globals.activate_project()
+		Manager.clear_project()
+		Manager.activate_project()
 
 		
