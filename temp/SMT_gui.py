@@ -221,6 +221,7 @@ class MainScreen(object):
 		
 	def exit_callback(self):
 		""" This function is callback to an exit attempt by the user """
+		Manager.clear_project(self)
 		self.master.quit()
 		self.master.destroy()
 
