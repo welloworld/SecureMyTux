@@ -64,6 +64,7 @@ def log_contains_ip_or_mac(l):
 
 
 def read_logs():
+    logs_data= {}
     logs_data_temp={}
     smt_dir = '/var/log/smt'
     if os.path.exists(smt_dir):

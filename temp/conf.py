@@ -16,10 +16,10 @@ from ps_by_user import ps
 
 #------------------------- Global Variables ---------------------------#
 power_state_on = 'isOn'
-DOS = 'dos'
-ARP = 'arp'
-RDHCP = 'rogue dhcp'
-SHM = 'syscall hooking manager'
+DOS = 'DOS Detector'
+ARP = 'ARP Spoofing'
+RDHCP = 'Rogue DHCP Detector'
+SHM = 'Syscall Hooking Manager'
 blacklist = 'blacklist'
 dhcp_server = 'server_address'
 
@@ -55,9 +55,12 @@ class Manager(object):
 	@staticmethod
 	def load_state_conf():
 		""" This function loads project-run configuration from 'STATE_CONF_FILE' into 'Globals.project_components_info' """
-		with open(STATE_CONF_FILE, 'rb') as f:
-			Globals.project_components_info = pickle.load(f)
-
+                try:
+                    with open(STATE_CONF_FILE, 'rb') as f:
+		    	Globals.project_components_info = pickle.load(f)
+                except:
+                    open(STATE_CONF_FILE, 'w').close()
+                    
 	@staticmethod
 	def save_state_conf():
 		""" This function converts 'Globals.project_components_info' and saves it into 'STATE_CONF_FILE' """
