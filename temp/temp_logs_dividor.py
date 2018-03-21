@@ -5,17 +5,17 @@ from time import strptime as time_strptime
 
 logs_data = {}
 subcategories_name_to_description = { #Don't worry about the lower and the uppercase - the code changes it to lowercase anyway 
-    'FW_ARP': 'ARP Spoofing',
+    'FW_ARP' : 'ARP Spoofing',
     'FW_DHCP': 'Rouge DHCP',
-    'FW_DOS': 'DOS',
+    'FW_DOS' : 'DOS',
     'FW_MISC': 'Misc',
-    'SHM_SC': 'File descriptors',
-    'SHM_SD': 'Directories',
-    'SHM_SE': 'Executions',
-    'SHM_SF': 'Files',
-    'SHM_SH': 'Manager',
-    'SHM_SP': 'Permissions',
-    'SHM_SS': 'Sockets'
+    'SHM_SC' : 'File descriptors',
+    'SHM_SD' : 'Directories',
+    'SHM_SE' : 'Executions',
+    'SHM_SF' : 'Files',
+    'SHM_SH' : 'Manager',
+    'SHM_SP' : 'Permissions',
+    'SHM_SS' : 'Sockets'
 }
 
 def merge_two_dicts(x, y):
@@ -64,8 +64,9 @@ def log_contains_ip_or_mac(l):
 
 
 def read_logs():
-    logs_data= {}
+    global logs_data
     logs_data_temp={}
+    logs_data={}
     smt_dir = '/var/log/smt'
     if os.path.exists(smt_dir):
         smt_files = os.listdir(smt_dir)
@@ -125,7 +126,7 @@ def read_logs():
                 #    print '%s is empty' % (name) #Actually need to read here the logs that not from the syscalls
     else:
         print '%s is not defined' % (smt_dir)
-
+   
 #This function searches inside the logs data, for example - get all logs with pid 1000 - you send 'pid' as key and 1000 as value.
 #Works on every key (Go to supporting keys)
 #Need to support date,subcategory
@@ -172,12 +173,45 @@ def get_all_logs_by_date(time_part):
                 all_types.append(log)
     return all_types                        
 
+def delete_all_logs():
+    global logs_data
+    logs_data={}
+    smt_dir = '/var/log/smt'
+    
+    if os.path.exists(smt_dir):
+        smt_files = os.listdir(smt_dir)
+        if len(smt_files) == 0:
+            print 'No files :('
+        else:
+            for fname in smt_files:
+                os.remove( smt_dir + '/' + fname,'r')
 
+    else:
+        print '%s is not defined' % (smt_dir)
+
+
+def is_in_danger(): #This function should be checked!
+    global logs_data
+    attacks=[]
+    fw_logs = search_in_logs('subcategory','rogue dhcp') + search_in_logs('subcategory','arp spoofing') + search_in_logs('subcategory','dos')
+    if len(danger) > 0:
+        for log in fw_logs:
+            if 'message' in log and 'Attack' in log['message'] and log['message'].count('{') == 1 and log['message'].count('}') == 1:
+                attacks.append(log)
+    else:
+        return None   
+
+    if len(attacks) > 0:
+        return attacks
+    else:
+        return None    
 
 read_logs()   
+is_in_danger()
+print search_in_logs('subcategory','arp spoofing')
 #print search_in_logs('date','09-03-2018 10:30') #Works on every key (Go to supporting keys)
 #print logs_data
-#print get_all_kinds_of('ip') #Works on every key (Go to supporting keys)
+#print get_all_kinds_of('subcategory') #Works on every key (Go to supporting keys)
 #print get_all_logs_by_date({'hour': '11', 'min': '22', 'month': '3', 'sec': '34', 'year': '2018', 'day': '9'})
 
 

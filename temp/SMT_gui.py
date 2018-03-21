@@ -7,6 +7,8 @@ class BlacklistScreen(object):
 	
 	def __init__(self, master):
 		self.master = master
+		self.master.title("Blacklist")
+
 		self.frame = tk.Frame(master)
 		
 		address_input = tk.Text(self.frame, height = 5)
@@ -37,6 +39,8 @@ class SelectUsersScreen(object):
 	
 	def __init__(self, master):
 		self.master = master
+		self.master.title("Users")
+
 		self.frame = tk.Frame(master)
 
 		dmesg = subprocess.Popen(['getent passwd | cut -d : -f 1'], stdout=subprocess.PIPE, shell=True)
@@ -67,6 +71,8 @@ class ViewLogsScreen(object):
 
 	def __init__(self, master):
 		self.master = master
+		self.master.title("Logs")
+
 		self.frame = tk.Frame(master)
 
 		cur_column = 0
@@ -92,7 +98,8 @@ class ViewLogsScreen(object):
 		cur_column += 1
 		 
 
-		self.log_view = tk.Text(self.frame, height = 20)
+		self.log_view = tk.Text(self.frame, height = 30)
+		#self.log_view = tk.LabelFrame(self.frame,height = 100)
 		self.log_view.grid(row = 1, columnspan = cur_column)
 
 		self.frame.pack()
@@ -105,7 +112,23 @@ class ViewLogsScreen(object):
 			self.log_view.insert(beginning, func())
 		else:
 			self.log_view.insert(beginning, func(func_param))
+		""" ############################ It works good but I can't find how to delete the old Labels
+		try:
+			self.label.destroy()
+		except:
+			pass
+		self.log_view = tk.LabelFrame(self.frame,height = 100)
+		self.log_view.grid(row = 1, columnspan = 10)
+		#self.log_view.pack(fill="both",expand="yes")
 
+		if func_param == None:
+			self.label = Label(self.log_view,text=func())
+			self.label.pack()
+		else:
+			self.label = Label(self.log_view,text=func(func_param))
+			self.label.pack()
+		self.log_view.pack()	
+		"""
 	def get_users_from_user(self):
 		""" Let the user choose which users he is interested in and return his choice"""
 		s = tk.Toplevel(self.master)
@@ -120,6 +143,7 @@ class FeatureControlScreen(object):
 	
 	def __init__(self, master):
 		self.master = master
+		self.master.title("Features Control")
 		self.frame = tk.Frame(master)
 
 		cur_row = 0
@@ -180,6 +204,8 @@ class MainScreen(object):
 
 	def __init__(self, master):
 		self.master = master
+		self.master.title("Secure My Tux")
+
 		self.frame = tk.Frame(master)
 		self.screens = []
 		self.project_state = tk.StringVar()

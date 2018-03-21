@@ -1,6 +1,6 @@
 #------------------Imports ----------------------#
 import Tkinter as tk
-
+from Tkinter import Label
 import sys
 sys.path.insert(0, 'tools/') #Import inside directory python codes
 
