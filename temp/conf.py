@@ -12,7 +12,7 @@ from summarize_permissions import perms
 from summarize_sudoers import sudoers_info
 from logged_in import w_info
 from ps_by_user import ps
-from temp_logs_dividor import read_logs, search_in_logs, get_all_kinds_of, get_all_logs_by_date, logs_data
+from temp_logs_dividor import read_logs, search_in_logs, get_all_kinds_of, get_all_logs_by_date, delete_all_logs, logs_data
 
 
 #------------------------- Global Variables ---------------------------#
@@ -38,7 +38,7 @@ class Globals(object):
 		,DOS: {power_state_on : True}#features_string_arg=D,fe_len=1
 		,RDHCP: {power_state_on : False, dhcp_server: ''}#features_string_arg=R,fe_len=1 | dhcp_server_ip_arg="aaaa" server_len=4 //NOTICE: I think we changed aaaa addresses to 192.168.1.12 style
 		,SHM: {power_state_on : True}
-		,blacklist: {'addresses': '', 'length': 0}#blacklist_string_arg="192.168.1.12,11:22:33:44:55:dd,10.0.1.25" bl_len=3
+		,blacklist: {'addresses': [], 'length': 0}#blacklist_string_arg="192.168.1.12,11:22:33:44:55:dd,10.0.1.25" bl_len=3
 		}
 
 	# used in ViewLogsScreen in order to let the user choose users
@@ -91,7 +91,7 @@ class Manager(object):
 			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
 		
 		#Run Firewall
-		call(firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ Globals.project_components_info[blacklist]['addresses'] + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra, shell = True)# rdhcp server ip parameters
+		call(firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra, shell = True)# rdhcp server ip parameters
 		
 		if Globals.project_components_info[SHM][power_state_on] == True:
 			call(shm_activation, shell = True)

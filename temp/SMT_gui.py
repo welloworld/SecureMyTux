@@ -1,7 +1,6 @@
 #!/usr/bin/python2
 from conf import *
 		
-#fix gui layout
 #add functionality
 class BlacklistScreen(object):
 	
@@ -11,29 +10,39 @@ class BlacklistScreen(object):
 
 		self.frame = tk.Frame(master)
 		
-		address_input = tk.Text(self.frame, height = 5)
-		address_input.grid(row = 0, column = 0)
-		
+		self.blacklist_view = tk.Text(self.frame, height = 20, width = 20)
+		self.blacklist_view.pack(side = tk.RIGHT)
+
+		self.address_input = tk.Entry(self.frame)
+		self.address_input.pack(side = tk.TOP)
+
 		add_address_button = tk.Button(self.frame, text = 'Add address', command = self.add_address_callback, width = Globals.button_width, height = Globals.button_height)
-		add_address_button.grid(row = 0, column = 1)
-		
+		add_address_button.pack()
+
 		delete_address_button = tk.Button(self.frame, text = 'Delete address', command = self.delete_address_callback, width = Globals.button_width, height = Globals.button_height)
-		delete_address_button.grid(row = 1, column = 1)
-		
-		blacklist_view = tk.Text(self.frame, height = 20)
-		blacklist_view.grid(row = 0, column = 2)
-		
+		delete_address_button.pack()
+
 		self.frame.pack()
-		
-		
+		self.show_blacklist()
+				
 	def add_address_callback(self):
 		""" This function is responsible for adding addresses to the blacklist """
-		pass
-	
+		Globals.project_components_info[blacklist]['addresses'].append(self.address_input.get())
+		Globals.project_components_info[blacklist]['length'] += 1
+		self.show_blacklist()
+
 	def delete_address_callback(self):
 		""" This function is responsible for adding addresses to the blacklist """
-		pass
-	
+		Globals.project_components_info[blacklist]['addresses'] = filter(lambda x: x != self.address_input.get() , Globals.project_components_info[blacklist]['addresses'])
+		Globals.project_components_info[blacklist]['length'] -= 1
+		self.show_blacklist()
+
+	def show_blacklist(self):
+		""" Print the blacklist """
+		self.blacklist_view.delete('1.0', tk.END)
+		for a in Globals.project_components_info[blacklist]['addresses']:
+			self.blacklist_view.insert(tk.INSERT, a + '\n')
+
 
 class SelectUsersScreen(object):
 	
@@ -95,8 +104,10 @@ class SmtLogsScreen(object):
 		for component_name, settings in self.params.items():
 			mb.menu.add_checkbutton(label = component_name, variable = settings['on'])
 		
-		self.extra_input = tk.Entry(self.frame, text='Specific search', width=10)
-		self.extra_input.grid(row = 0, column = 0, sticky='e')
+		cur_column += 1
+
+		self.extra_input = tk.Entry(self.frame, text='Specific search', width=15)
+		self.extra_input.grid(row = 0, column = cur_column)
 
 		cur_column += 1
 
@@ -104,6 +115,9 @@ class SmtLogsScreen(object):
 		self.show_button.grid(row = 0, column = cur_column)
 		cur_column += 1
 
+		self.delete_button = tk.Button(self.frame, text = 'Delete ALL Logs', command = delete_all_logs, width = Globals.button_width, height = Globals.button_height)
+		self.delete_button.grid(row = 0, column = cur_column)
+		cur_column += 1
 
 		self.log_view = tk.Text(self.frame, height = 30)
 		self.log_view.grid(row = 1, columnspan = cur_column)
@@ -296,6 +310,8 @@ class MainScreen(object):
 		exit_button.grid(row = 1, column = 1)
 		self.frame.pack()
 
+		self.master.protocol("WM_DELETE_WINDOW", self.exit_callback)
+
 
 	def switch_callback(self):
 		""" This function is responsible for the functionality of Turn On\Off button """
@@ -321,6 +337,7 @@ class MainScreen(object):
 		
 	def exit_callback(self):
 		""" This function is callback to an exit attempt by the user """
+		Manager.save_state_conf()
 		Manager.clear_project(self)
 		self.master.quit()
 		self.master.destroy()
@@ -335,7 +352,7 @@ class MainScreen(object):
 
 def main():
 	global main
-
+	#call('python Logger.py', shell = True)
 	master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)
