@@ -129,18 +129,40 @@ class SmtLogsScreen(object):
 		#global logs_data
 
 		info = ''
+		mes=''
+		f = False
 		for key, settings in self.params.items():
 			if settings['on'].get() == True:
 				if self.extra_input.get() == '':
-					info = get_all_kinds_of(key)
-				else:
-					info = search_in_logs(key, self.extra_input.get())
 
+					info = get_all_kinds_of(key)
+					for l in info:
+						mes += str(l) + '\n'
+				else:
+
+					info = search_in_logs(key, self.extra_input.get())
+					for l in info:
+						for kk,vv in l.items():
+							mes += str(kk) + '=' + str(vv) + '\n\t'
+						#mes = mes[:-1]	
+						mes += '\n\t'
+		
 		if info == '':
 			info = logs_data
+			if type(info) == dict:
+				for k,v in info.items():
+					mes += k +':\n\t'
+					for l in v:
+						for kk,vv in l.items():
+							mes += str(kk) + '=' + str(vv) + '\n\t'
+						#mes = mes[:-1]	
+						mes += '\n\t'
+
+					mes = mes[:-1] + '\n'
+			
 
 		self.log_view.delete('1.0', tk.END)
-		self.log_view.insert('1.0', info)
+		self.log_view.insert('1.0', mes)
 
 
 class ExtraInfoScreen(object):
@@ -352,7 +374,10 @@ class MainScreen(object):
 
 def main():
 	global main
-	#call('python Logger.py', shell = True)
+	global sudoPassword
+	command = 'python2 Logger.py'
+	
+	Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 	master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)

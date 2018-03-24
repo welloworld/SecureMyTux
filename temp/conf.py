@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, 'tools/') #Import inside directory python codes
 
 import subprocess
+from subprocess import Popen
 from subprocess import call
 import pickle
 
@@ -23,6 +24,7 @@ RDHCP = 'Rogue DHCP Detector'
 SHM = 'Syscall Hooking Manager'
 blacklist = 'blacklist'
 dhcp_server = 'server_address'
+sudoPassword = '954248630'
 
 class Globals(object):
 
@@ -58,7 +60,7 @@ class Manager(object):
 		""" This function loads project-run configuration from 'STATE_CONF_FILE' into 'Globals.project_components_info' """
                 try:
                     with open(STATE_CONF_FILE, 'rb') as f:
-		    	Globals.project_components_info = pickle.load(f)
+		    	Globals.project_components_info = pickle.load(f) #tab?
                 except:
                     open(STATE_CONF_FILE, 'w').close()
                     
@@ -71,7 +73,7 @@ class Manager(object):
 	@staticmethod
 	def activate_project(main_window):
 		""" This function activates the project with the current 'Globals.project_components_info' """
-		firewall_activation = 'sudo insmod fw.ko '
+		firewall_activation = 'insmod fw.ko '
 		fw_param = {'features_string_arg':'', 'fe_len':0,'blacklist_string_arg':'', 'bl_len':0}
 		shm_activation = './run_shm.sh'
 		extra = ''
@@ -91,10 +93,13 @@ class Manager(object):
 			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
 		
 		#Run Firewall
-		call(firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra, shell = True)# rdhcp server ip parameters
+		command = firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra
+	
+		Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
 		
 		if Globals.project_components_info[SHM][power_state_on] == True:
-			call(shm_activation, shell = True)
+			command = shm_activation
+			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
 			
 		Globals.is_project_on = True
 		main_window.flip_switch_button()
@@ -102,15 +107,17 @@ class Manager(object):
 	@staticmethod
 	def clear_project(main_window):
 		""" Shutdown project. remove Firewall and Syscall Hooking Manager. """
-		fw_deactivation = 'sudo rmmod fw.ko'
-		shm_deactivation = 'sudo rmmod shm.ko'
+		fw_deactivation = 'rmmod fw.ko'
+		shm_deactivation = 'rmmod shm.ko'
 		
 		if Globals.is_project_on == True:
 			#shutdown components
-			call(fw_deactivation, shell = True)
+			command = fw_deactivation
+			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
 
 			if Globals.project_components_info[SHM][power_state_on]:
-				call(shm_deactivation, shell = True)
+				command = shm_deactivation
+				Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
 		
 		
 		Globals.is_project_on = False

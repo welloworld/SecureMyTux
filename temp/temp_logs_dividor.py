@@ -17,6 +17,7 @@ subcategories_name_to_description = { #Don't worry about the lower and the upper
     'SHM_SP' : 'Permissions',
     'SHM_SS' : 'Sockets'
 }
+sudoPassword = '954248630'
 
 def merge_two_dicts(x, y):
     z = x.copy()   # start with x's keys and values
@@ -33,7 +34,9 @@ def replace_all(string,to_replace,what):
 
 def get_normal_date(d):
     date_splited = d.split(' ')
-    needed_date = '%s:%s:%s:%s' % (date_splited[3],str(time_strptime(date_splited[1],'%b').tm_mon), date_splited[5], date_splited[4])
+    #print date_splited
+    #needed_date = '%s:%s:%s:%s' % (date_splited[3],str(time_strptime(date_splited[1],'%b').tm_mon), date_splited[5], date_splited[4])
+    needed_date = '%s:%s:%s:%s' % (date_splited[2],str(time_strptime(date_splited[1],'%b').tm_mon), date_splited[4], date_splited[3])
     #needed_date looks like: '9-3-2018 11:22:03'
     perfect_date = {}
     needed_date_splitted = needed_date.split(':')
@@ -83,7 +86,7 @@ def read_logs():
                 logs_data_temp[fname] = [line.replace('\n','').rsplit('-',1) for line in lines]
                 
         for name,logs in logs_data_temp.items():
-            
+            #print logs_data_temp[fname]
             logs_data[name] = []
             sub =  subcategories_name_to_description[name] if name in subcategories_name_to_description else ''
             
@@ -96,9 +99,11 @@ def read_logs():
                     params_list = map(lambda x : x.strip(), syscall_params[1].split(' | ')) 
                     params_dic = {}
                     
+                    #print params_list
                     for param in params_list:
                         key_val_param = param.split('=')
-                        params_dic[key_val_param[0]] = key_val_param[1]
+                        if len(key_val_param) > 1:
+                            params_dic[key_val_param[0]] = key_val_param[1]
                     
                     log = {'syscall_name' : syscall_params[0],'date' : date , 'subcategory' : sub}
                     log = merge_two_dicts(log,params_dic)
@@ -174,7 +179,7 @@ def get_all_logs_by_date(time_part):
     return all_types                        
 
 def delete_all_logs():
-    global logs_data
+    global logs_data,sudoPassword
     logs_data={}
     smt_dir = '/var/log/smt'
     
@@ -183,8 +188,11 @@ def delete_all_logs():
         if len(smt_files) == 0:
             print 'No files :('
         else:
+            print 
             for fname in smt_files:
-                os.remove( smt_dir + '/' + fname,'r')
+                command = 'rm ' + smt_dir + '/' + fname
+                os.system('echo %s | sudo -S %s' % (sudoPassword, command))
+                #os.remove( smt_dir + '/' + fname)
 
     else:
         print '%s is not defined' % (smt_dir)
