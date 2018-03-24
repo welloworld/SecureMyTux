@@ -39,7 +39,7 @@ class SelectUsersScreen(object):
 	
 	def __init__(self, master):
 		self.master = master
-		self.master.title("Users")
+		self.master.title("Select Users")
 
 		self.frame = tk.Frame(master)
 
@@ -66,17 +66,79 @@ class SelectUsersScreen(object):
 		self.frame.pack()
 
 
-#change buttons to checkbuttons to show logs and add functionaliy
-class ViewLogsScreen(object):
+class SmtLogsScreen(object):
 
 	def __init__(self, master):
 		self.master = master
-		self.master.title("Logs")
+		self.master.title("SMT Logs")
+
+		self.frame = tk.Frame(self.master)
+
+		self.params = {'uid': {'on': tk.BooleanVar()} ,
+		 'pid': {'on': tk.BooleanVar()} ,
+		 'mac': {'on': tk.BooleanVar()} ,
+		 'ip': {'on': tk.BooleanVar()} ,
+		 'syscall_name': {'on': tk.BooleanVar()} ,
+		 'filename': {'on': tk.BooleanVar()} ,
+		 'subcategory': {'on': tk.BooleanVar()} ,
+		 'date': {'on': tk.BooleanVar()}
+		 }
+
+		cur_column = 0
+		menuText = tk.StringVar()
+		menuText.set('Sort by:')
+		mb = tk.Menubutton( self.frame, textvariable = menuText, relief = tk.RAISED)
+		mb.grid(row = 0, column = 0)
+		mb.menu = tk.Menu(mb, tearoff = 0)
+		mb['menu'] = mb.menu
+
+		for component_name, settings in self.params.items():
+			mb.menu.add_checkbutton(label = component_name, variable = settings['on'])
+		
+		self.extra_input = tk.Entry(self.frame, text='Specific search', width=10)
+		self.extra_input.grid(row = 0, column = 0, sticky='e')
+
+		cur_column += 1
+
+		self.show_button = tk.Button(self.frame, text = 'Show Logs', command = lambda: self.view_log_callback(), width = Globals.button_width, height = Globals.button_height)
+		self.show_button.grid(row = 0, column = cur_column)
+		cur_column += 1
+
+
+		self.log_view = tk.Text(self.frame, height = 30)
+		self.log_view.grid(row = 1, columnspan = cur_column)
+
+		self.frame.pack()
+
+	def view_log_callback(self):
+		""" Uses self.params and functions from temp_logs_dividor.py to get info the user requested in self.params, than prints it to log_view """
+		#global logs_data
+
+		info = ''
+		for key, settings in self.params.items():
+			if settings['on'].get() == True:
+				if self.extra_input.get() == '':
+					info = get_all_kinds_of(key)
+				else:
+					info = search_in_logs(key, self.extra_input.get())
+
+		if info == '':
+			info = logs_data
+
+		self.log_view.delete('1.0', tk.END)
+		self.log_view.insert('1.0', info)
+
+
+class ExtraInfoScreen(object):
+
+	def __init__(self, master):
+		self.master = master
+		self.master.title("Information")
 
 		self.frame = tk.Frame(master)
 
 		cur_column = 0
-		# create view logs buttons in screen
+		# create information buttons in screen
 		# Logged in users button
 		logged_in_users_button = tk.Button(self.frame, text = 'Logged in users', command = lambda: self.view_log_callback(w_info), width = Globals.button_width, height = Globals.button_height)
 		logged_in_users_button.grid(row = 0, column = cur_column)
@@ -96,8 +158,11 @@ class ViewLogsScreen(object):
 		users_processes_history_button = tk.Button(self.frame, text = 'User processes history', command = lambda: self.view_log_callback(ps, func_param = self.get_users_from_user()), width = Globals.button_width, height = Globals.button_height)
 		users_processes_history_button.grid(row = 0, column = cur_column)
 		cur_column += 1
-		 
-
+		'''
+		project_logs_button = tk.Button(self.frame, text = 'SMT Logs', command = lambda: self.view_log_callback(ps, func_param = self.get_users_from_user()), width = Globals.button_width, height = Globals.button_height)
+		project_logs_button.grid(row = 0, column = cur_column)
+		cur_column += 1
+		'''
 		self.log_view = tk.Text(self.frame, height = 30)
 		#self.log_view = tk.LabelFrame(self.frame,height = 100)
 		self.log_view.grid(row = 1, columnspan = cur_column)
@@ -164,7 +229,7 @@ class FeatureControlScreen(object):
 		t.set('DHCP server ip:')
 		label = tk.Label(self.frame, textvariable = t)
 		label.grid(row = cur_row, sticky = 'w')
-		self.addr_input = tk.Entry(self.frame)
+		self.addr_input = tk.Entry(self.frame, width=10)
 		self.addr_input.grid(row = cur_row, sticky = 'e')
 		
 		# create save button in screen
@@ -214,9 +279,13 @@ class MainScreen(object):
 		switch_button = tk.Button(self.frame, textvariable = self.project_state, command = self.switch_callback, width = Globals.button_width, height = Globals.button_height)
 		switch_button.grid(row = 0, column = 0)
 
-		# create View Logs button in screen
-		view_button = tk.Button(self.frame, text = 'View Logs', command = self.switch_to_view_logs_screen, width = Globals.button_width, height = Globals.button_height)
-		view_button.grid(row = 0, column = 1)
+		# create SMT Logs button in screen
+		logs_button = tk.Button(self.frame, text = 'SMT Logs', command = self.switch_to_smt_logs_screen, width = Globals.button_width, height = Globals.button_height)
+		logs_button.grid(row = 0, column = 1)
+
+		# create Extra Info button in screen
+		info_button = tk.Button(self.frame, text = 'Extra Info', command = self.switch_to_extra_info_screen, width = Globals.button_width, height = Globals.button_height)
+		info_button.grid(row = 0, column = 2)
 
 		# create Feature control button in screen
 		control_button = tk.Button(self.frame, text = 'Feature Control', command = self.switch_to_feature_control_screen, width = Globals.button_width, height = Globals.button_height)
@@ -235,10 +304,15 @@ class MainScreen(object):
 		else:
 			Manager.activate_project(self)
 
-	def switch_to_view_logs_screen(self):
-		""" This function is responsible for opening/switching to the view logs screen """
+	def switch_to_smt_logs_screen(self):
+		""" Opens the smt logs screen """
 		s = tk.Toplevel(self.master)
-		ViewLogsScreen(s)
+		SmtLogsScreen(s)
+
+	def switch_to_extra_info_screen(self):
+		""" This function is responsible for opening/switching to the extra information screen """
+		s = tk.Toplevel(self.master)
+		ExtraInfoScreen(s)
 
 	def switch_to_feature_control_screen(self):
 		""" This function is responsible for opening/switching to the view logs screen """

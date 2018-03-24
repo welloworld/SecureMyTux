@@ -12,6 +12,7 @@ from summarize_permissions import perms
 from summarize_sudoers import sudoers_info
 from logged_in import w_info
 from ps_by_user import ps
+from temp_logs_dividor import read_logs, search_in_logs, get_all_kinds_of, get_all_logs_by_date, logs_data
 
 
 #------------------------- Global Variables ---------------------------#
@@ -28,7 +29,7 @@ class Globals(object):
 	button_height = 4
 	button_width = 18
 	checkbutton_height = 3
-	checkbutton_width = 30
+	checkbutton_width = 20
 
 	is_project_on = False
 	# a dictionary containing which components of the project should run and what parameters to pass them
@@ -104,11 +105,12 @@ class Manager(object):
 		fw_deactivation = 'sudo rmmod fw.ko'
 		shm_deactivation = 'sudo rmmod shm.ko'
 		
-		#shutdown components
-		call(fw_deactivation, shell = True)
+		if Globals.is_project_on == True:
+			#shutdown components
+			call(fw_deactivation, shell = True)
 
-		if Globals.project_components_info[SHM][power_state_on]:
-			call(shm_deactivation, shell = True)
+			if Globals.project_components_info[SHM][power_state_on]:
+				call(shm_deactivation, shell = True)
 		
 		
 		Globals.is_project_on = False

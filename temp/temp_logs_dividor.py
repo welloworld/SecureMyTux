@@ -207,8 +207,8 @@ def is_in_danger(): #This function should be checked!
         return None    
 
 read_logs()   
-is_in_danger()
-print search_in_logs('subcategory','arp spoofing')
+#is_in_danger()
+#print search_in_logs('subcategory','arp spoofing')
 #print search_in_logs('date','09-03-2018 10:30') #Works on every key (Go to supporting keys)
 #print logs_data
 #print get_all_kinds_of('subcategory') #Works on every key (Go to supporting keys)
