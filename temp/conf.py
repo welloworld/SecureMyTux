@@ -7,13 +7,20 @@ sys.path.insert(0, 'tools/') #Import inside directory python codes
 import subprocess
 from subprocess import Popen
 from subprocess import call
+
 import pickle
+import os
+import re
+from datetime import datetime
+
+from time import strptime as time_strptime
+import threading
 
 from summarize_permissions import perms
 from summarize_sudoers import sudoers_info
 from logged_in import w_info
 from ps_by_user import ps
-from temp_logs_dividor import read_logs, search_in_logs, get_all_kinds_of, get_all_logs_by_date, delete_all_logs, logs_data
+#from temp_logs_dividor import read_logs, search_in_logs, get_all_kinds_of, get_all_logs_by_date, delete_all_logs, logs_data
 
 
 #------------------------- Global Variables ---------------------------#
@@ -25,6 +32,22 @@ SHM = 'Syscall Hooking Manager'
 blacklist = 'blacklist'
 dhcp_server = 'server_address'
 sudoPassword = '954248630'
+
+RUN_EVERY = 30
+logs_data = {}
+subcategories_name_to_description = { #Don't worry about the lower and the uppercase - the code changes it to lowercase anyway 
+    'FW_ARP' : 'ARP Spoofing',
+    'FW_DHCP': 'Rouge DHCP',
+    'FW_DOS' : 'DOS',
+    'FW_MISC': 'Misc',
+    'SHM_SC' : 'File descriptors',
+    'SHM_SD' : 'Directories',
+    'SHM_SE' : 'Executions',
+    'SHM_SF' : 'Files',
+    'SHM_SH' : 'Manager',
+    'SHM_SP' : 'Permissions',
+    'SHM_SS' : 'Sockets'
+}
 
 class Globals(object):
 
