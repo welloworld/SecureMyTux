@@ -366,6 +366,7 @@ class MainScreen(object):
 		""" This function is callback to an exit attempt by the user """
 		Manager.save_state_conf()
 		Manager.clear_project(self)
+
 		self.master.quit()
 		self.master.destroy()
 
@@ -615,11 +616,12 @@ def main():
 	global sudoPassword
 	command = 'python2 Logger.py'
 	
-	Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
+	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 	master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)
 	master.mainloop()
+	logger.kill()
 	"""
 	perms(['1000'])
 	sudoers_info()
