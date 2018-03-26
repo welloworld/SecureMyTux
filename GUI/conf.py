@@ -15,6 +15,7 @@ from datetime import datetime
 
 from time import strptime as time_strptime
 import threading
+import time
 
 from summarize_permissions import perms
 from summarize_sudoers import sudoers_info
@@ -105,25 +106,26 @@ class Manager(object):
 		if True == Globals.project_components_info[ARP][power_state_on]:
 			fw_param['features_string_arg'] += 'A'
 			fw_param['fe_len'] += 1
-			
+			print '[+++] ARP Spoofing added'
 		elif True == Globals.project_components_info[DOS][power_state_on]:
 			fw_param['features_string_arg'] += 'D'
 			fw_param['fe_len'] += 1
-			
+			print '[+++] DOS added'
 		elif True == Globals.project_components_info[RDHCP][power_state_on]:
 			fw_param['features_string_arg'] += 'R'
 			fw_param['fe_len'] += 1
 			extra = 'dhcp_server_ip_arg=' + Globals.project_components_info[RDHCP]['server_address'] + ' server_len=4' 
-		
+		        print '[+++] RDHCP added'
 		#Run Firewall
 		command = firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + extra
 	
 		Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
+                print '[+++] Firewall added'
 		
 		if Globals.project_components_info[SHM][power_state_on] == True:
 			command = shm_activation
 			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
-			
+			print '[+++] Sys_hook_manager added'
 		Globals.is_project_on = True
 		main_window.flip_switch_button()
 			
@@ -137,9 +139,11 @@ class Manager(object):
 			#shutdown components
 			command = fw_deactivation
 			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
+                        print '[---] Firewall removed'
 		if Globals.project_components_info[SHM][power_state_on]:
 			command = shm_deactivation
 			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
+                        print '[---] Sys_hook_manager removed'
 		
 		Globals.is_project_on = False
 		main_window.flip_switch_button()

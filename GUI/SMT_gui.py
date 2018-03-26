@@ -369,7 +369,7 @@ class MainScreen(object):
 
 		self.master.quit()
 		self.master.destroy()
-		print 'BYE-BYE'
+		print '[---] GUI destroyed'
 
 	def flip_switch_button(self):
 		""" Changes the switch button to Off and On"""
@@ -588,20 +588,25 @@ def is_in_danger(): #This function should be checked!
     else:
         return None    
 
-
+contin = True
 def readEveryNSeconds():
-    global RUN_EVERY
-    threading.Timer(RUN_EVERY, readEveryNSeconds).start()
-    read_logs()  
-    print 'logs readed'
-    attacks = is_in_danger()
-    if attacks:
-    	print 'UNDER ATTACK:'
-    	for log in attacks:
+    global RUN_EVERY,contin
+    if contin:
+        #threading.Timer(RUN_EVERY,readEveryNSeconds).start()
+        read_logs()  
+        print 'logs readed'
+        attacks = is_in_danger()
+        if attacks:
+    	    print '[***] UNDER ATTACK:'
+    	    for log in attacks:
     		print '\t' + str(log)
-    #print logs_data
-    
-readEveryNSeconds()     
+        time.sleep(RUN_EVERY)
+        readEveryNSeconds()
+    else:
+        sys.exit(0)
+
+#threading.Timer(RUN_EVERY, readEveryNSeconds).start()    
+#readEveryNSeconds()     
 #is_in_danger()
 #print search_in_logs('subcategory','arp spoofing')
 #print search_in_logs('date','09-03-2018 10:30') #Works on every key (Go to supporting keys)
@@ -625,24 +630,22 @@ Supporting keys:
 def main():
 	global main
 	global sudoPassword
+        global contin
 	command = 'python2 Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
-	print 'Logger runs'
-	master = tk.Tk()
+	print '[+++] Logger added'
+
+        t = threading.Thread(target=readEveryNSeconds)
+        t.start()
+        master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)
 	master.mainloop()
 	logger.kill()
-	print 'Logger killed'
-	sys.exit(0)
-	"""
-	perms(['1000'])
-	sudoers_info()
-	w_info()	
-	ps('welloworld')
-	"""
-	
+	print '[---] Logger removed'
+	contin = False
+        print '[###] Please wait until the program gets killed'
 
 
 if __name__ == '__main__':
