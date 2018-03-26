@@ -1,0 +1,36 @@
+In order to run attacks for showing the beauty of this project, Please do the following:
+First, DOWNLOAD scapy as `sudo pip install scapy`
+
+Then, run every attack without the module to show that the PC is unsafe!
+
+And foreach Component:
+
+Firewall:
+	Run the module like that (change the ip to prevent from, and NOTICE the ., at the end!):
+		sudo insmod fw.ko blacklist_string_arg="192.168.43.129.," bl_len=16 
+	From another computer just:
+		sudo ./firewall.py
+
+DOS:
+	Run the module with this string:
+		sudo insmod fw.ko features_string_arg="D" fe_len=1
+	From another computer just:
+		sudo ./DOS.py
+
+ARP_SPOOFING:
+	****  For showing the beauty of arp_spoofing, after running the attack, sniff data through Wireshark and from the victim enter a site and show that in Wireshark.
+	Then, do the same with the SecureMyTux and show that now the computer is safe.
+	****
+
+        Run the module with this string:
+                sudo insmod fw.ko features_string_arg="A" fe_len=1
+        From another computer just:
+                sudo ./arp_spoofing.py
+
+Rogue_DHCP:
+	Run the module with this string:
+		sudo insmod fw.ko features_string_arg="R" fe_len=1 dhcp_server_ip_arg="192.168.43.1" server_len=12 #USE WIRESHARK TO DEBUG
+	From another computer just:
+		sudo ./rogue_dhcp.py
+
+

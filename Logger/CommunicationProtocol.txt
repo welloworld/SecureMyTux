@@ -1,0 +1,2 @@
+1. Every log our module makes will start with [SMT].
+2. If the Firewall component makes a log it will add a[FA]\[FD]\[FR] dependent on where the log comes from.(A for arp, D for DOS, R for rogue dhcp). Another options are FM which is technical details about firewall in runtime, and FE which is errors through running.

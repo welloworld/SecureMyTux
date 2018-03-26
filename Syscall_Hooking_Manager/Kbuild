@@ -1,0 +1,2 @@
+obj-m := shm.o
+shm-objs := sys_hook_manager.o Strings/string_functions.o Helper/helper_functions.o Filters/filters.o 
