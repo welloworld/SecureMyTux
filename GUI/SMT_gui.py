@@ -293,6 +293,7 @@ class FeatureControlScreen(object):
 		
 		Globals.project_components_info[RDHCP][dhcp_server] = self.addr_input.get()
 		
+		print Globals.project_components_info
 		#saves the configuration 
 		Manager.save_state_conf()
 		
@@ -368,6 +369,7 @@ class MainScreen(object):
 
 		self.master.quit()
 		self.master.destroy()
+		print 'BYE-BYE'
 
 	def flip_switch_button(self):
 		""" Changes the switch button to Off and On"""
@@ -563,12 +565,12 @@ def delete_all_logs():
         if len(smt_files) == 0:
             print 'No files :('
         else:
-            print 
             for fname in smt_files:
                 command = 'rm ' + smt_dir + '/' + fname
                 os.system('echo %s | sudo -S %s' % (sudoPassword, command))
-                #os.remove( smt_dir + '/' + fname)
 
+                #os.remove( smt_dir + '/' + fname)
+            print 'All logs deleted'
     else:
         print '%s is not defined' % (smt_dir)
 
@@ -577,12 +579,9 @@ def is_in_danger(): #This function should be checked!
     global logs_data
     attacks=[]
     fw_logs = search_in_logs('subcategory','rogue dhcp') + search_in_logs('subcategory','arp spoofing') + search_in_logs('subcategory','dos')
-    if len(danger) > 0:
-        for log in fw_logs:
-            if 'message' in log and 'Attack' in log['message'] and log['message'].count('{') == 1 and log['message'].count('}') == 1:
-                attacks.append(log)
-    else:
-        return None   
+    for log in fw_logs:
+        if 'message' in log and 'Attack' in log['message'] and log['message'].count('{') == 1 and log['message'].count('}') == 1:
+            attacks.append(log)
 
     if len(attacks) > 0:
         return attacks
@@ -594,6 +593,12 @@ def readEveryNSeconds():
     global RUN_EVERY
     threading.Timer(RUN_EVERY, readEveryNSeconds).start()
     read_logs()  
+    print 'logs readed'
+    attacks = is_in_danger()
+    if attacks:
+    	print 'UNDER ATTACK:'
+    	for log in attacks:
+    		print '\t' + str(log)
     #print logs_data
     
 readEveryNSeconds()     
@@ -623,11 +628,14 @@ def main():
 	command = 'python2 Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
+	print 'Logger runs'
 	master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)
 	master.mainloop()
 	logger.kill()
+	print 'Logger killed'
+	sys.exit(0)
 	"""
 	perms(['1000'])
 	sudoers_info()
