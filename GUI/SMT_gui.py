@@ -27,14 +27,27 @@ class BlacklistScreen(object):
 				
 	def add_address_callback(self):
 		""" This function is responsible for adding addresses to the blacklist """
-		Globals.project_components_info[blacklist]['addresses'].append(self.address_input.get())
-		Globals.project_components_info[blacklist]['length'] += 1
+		address = self.address_input.get()
+		print Globals.project_components_info[blacklist]['addresses']
+		print Globals.project_components_info[blacklist]['length']	
+		if (not address in Globals.project_components_info[blacklist]['addresses'] and (is_mac(address) or is_ip(address))):
+			#print 'good'
+			Globals.project_components_info[blacklist]['addresses'].append(address)
+			Globals.project_components_info[blacklist]['length'] += 1
+		print Globals.project_components_info[blacklist]['addresses']
+		print Globals.project_components_info[blacklist]['length']		
+		#else:
+			#print 'notgood'	
 		self.show_blacklist()
 
 	def delete_address_callback(self):
 		""" This function is responsible for adding addresses to the blacklist """
+		old = Globals.project_components_info[blacklist]['addresses'][:]
 		Globals.project_components_info[blacklist]['addresses'] = filter(lambda x: x != self.address_input.get() , Globals.project_components_info[blacklist]['addresses'])
-		Globals.project_components_info[blacklist]['length'] -= 1
+		if old != Globals.project_components_info[blacklist]['addresses']:
+			Globals.project_components_info[blacklist]['length'] -= 1
+		print Globals.project_components_info[blacklist]['addresses']
+		print Globals.project_components_info[blacklist]['length']	
 		self.show_blacklist()
 
 	def show_blacklist(self):
@@ -262,7 +275,7 @@ class FeatureControlScreen(object):
 			cur_row += 1
 			
 			if True == info[power_state_on]:
-			    	state.toggle()#check button on
+                            state.toggle()#check button on
 		
 		t = tk.StringVar()
 		t.set('DHCP server ip:')
@@ -286,14 +299,13 @@ class FeatureControlScreen(object):
 	def save_callback(self):
 		""" This function saves changes made to the components state """
 		#Commit changes to Globals.project_components_info
-                
 		for name,state_var in self.state_buttons:
 			Globals.project_components_info[name][power_state_on] = state_var.get()
-                        
-	        	
-		Globals.project_components_info[RDHCP][dhcp_server] = self.addr_input.get()
 		
-		print Globals.project_components_info
+		dhcp = self.addr_input.get()
+		Globals.project_components_info[RDHCP][dhcp_server] = dhcp if is_ip(dhcp) else ''
+
+
 		#saves the configuration 
 		Manager.save_state_conf()
 		
@@ -384,8 +396,31 @@ def merge_two_dicts(x, y):
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
 
+def is_mac(s):
+	if not s.count(':')==5:
+		return False
+
+	splited = s.split(':')
+
+	for i in splited:
+		try:
+			val = int(i,16)
+		except ValueError:
+			return False	
+		if not val > 0 or not val < 256:
+			return False
+	return True
+
 def is_ip(s):
-    return (s.count('.') == 3) 
+	if not s.count('.')==3:
+		return False
+
+	splited = s.split('.')
+
+	for i in splited:
+		if not i.isdigit() or not int(i) > 0 or not int(i) < 256:
+			return False
+	return True 
 
 def replace_all(string,to_replace,what):
     for letter in to_replace:
@@ -452,6 +487,7 @@ def read_logs():
 
             if name.startswith('SHM') and name[-1] != 'H':
                 for log in logs:
+                    
                     date = get_normal_date(replace_all(log[1],'[]',''))
                     syscall_params = log[0].split(':',1)
                     params_list = map(lambda x : x.strip(), syscall_params[1].split(' | ')) 
@@ -477,11 +513,13 @@ def read_logs():
                 
                 if name.startswith('FW'):
                     for log in logs:
+
                         date = get_normal_date(replace_all(log[1],'[]',''))
                         mes = log[0].split(':',1)[0]
                         
                         ip_and_mac = {'date' : date, 'message' : mes, 'subcategory' : sub}
                         log = merge_two_dicts(log_contains_ip_or_mac(log[0]),ip_and_mac)
+                        #print log
                         logs_data[name].append(log)
                 else:
                     for log in logs:
@@ -589,21 +627,18 @@ contin = True
 def readEveryNSeconds():
     global RUN_EVERY,contin
     if contin:
-        #threading.Timer(RUN_EVERY,readEveryNSeconds).start()
+
         read_logs()  
         print 'logs readed'
         attacks = is_in_danger()
         if attacks:
     	    print '[***] UNDER ATTACK:'
     	    for log in attacks:
-    		print '\t' + str(log)
+                print '\t' + str(log)
         time.sleep(RUN_EVERY)
         readEveryNSeconds()
     else:
         sys.exit(0)
-
-#threading.Timer(RUN_EVERY, readEveryNSeconds).start()    
-#readEveryNSeconds()     
 #is_in_danger()
 #print search_in_logs('subcategory','arp spoofing')
 #print search_in_logs('date','09-03-2018 10:30') #Works on every key (Go to supporting keys)
@@ -625,24 +660,21 @@ Supporting keys:
 """
 
 def main():
-	global main
-	global sudoPassword
-        global contin
+	global main,sudoPassword, contin
 	command = 'python2 Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 	print '[+++] Logger added'
-
-        t = threading.Thread(target=readEveryNSeconds)
-        t.start()
-        master = tk.Tk()
+	t = threading.Thread(target=readEveryNSeconds)
+	t.start()
+	master = tk.Tk()
 	Manager.load_state_conf()
 	main = MainScreen(master)
 	master.mainloop()
 	logger.kill()
 	print '[---] Logger removed'
 	contin = False
-        print '[###] Please wait until the program gets killed'
+	print '[###] Please wait until the program gets killed'
 
 
 if __name__ == '__main__':
