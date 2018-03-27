@@ -1,0 +1,2 @@
+obj-m := fw.o
+fw-objs := Blacklist/blacklist.o DOS_Detector/DOS_detector.o ARP_Spoofing_Detector/arp_spoofing_detector.o Firewall.o Rogue_DHCP_Detector/Rogue_DHCP_Detector.o Rogue_DHCP_Detector/DHCP_Identification.o 

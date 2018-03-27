@@ -1,0 +1,1 @@
+cmd_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/welloworld/Desktop/SecureMyTux/Firewall/fw.ko /home/welloworld/Desktop/SecureMyTux/Firewall/fw.o /home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o ;  true
