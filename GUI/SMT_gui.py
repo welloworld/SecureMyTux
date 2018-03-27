@@ -257,14 +257,12 @@ class FeatureControlScreen(object):
 		for component_name, info in filter(lambda x: x[0] != blacklist, Globals.project_components_info.items()):
 			var = tk.BooleanVar()
 			self.state_buttons.append([component_name, var])
-			state = tk.Checkbutton(self.frame, text = component_name, variable = self.state_buttons[-1][1], 
-				 onvalue = 1, offvalue = 0, height = Globals.checkbutton_height, width = Globals.checkbutton_width 
-				)
+			state = tk.Checkbutton(self.frame, text = component_name, variable = self.state_buttons[-1][1], onvalue = 1, offvalue = 0, height = Globals.checkbutton_height, width = Globals.checkbutton_width)
 			state.grid(row = cur_row, column = 0, sticky = tk.W)
 			cur_row += 1
 			
 			if True == info[power_state_on]:
-					state.toggle()#check button on
+			    	state.toggle()#check button on
 		
 		t = tk.StringVar()
 		t.set('DHCP server ip:')
@@ -288,9 +286,11 @@ class FeatureControlScreen(object):
 	def save_callback(self):
 		""" This function saves changes made to the components state """
 		#Commit changes to Globals.project_components_info
+                
 		for name,state_var in self.state_buttons:
 			Globals.project_components_info[name][power_state_on] = state_var.get()
-		
+                        
+	        	
 		Globals.project_components_info[RDHCP][dhcp_server] = self.addr_input.get()
 		
 		print Globals.project_components_info
@@ -452,7 +452,6 @@ def read_logs():
 
             if name.startswith('SHM') and name[-1] != 'H':
                 for log in logs:
-                    
                     date = get_normal_date(replace_all(log[1],'[]',''))
                     syscall_params = log[0].split(':',1)
                     params_list = map(lambda x : x.strip(), syscall_params[1].split(' | ')) 
@@ -478,13 +477,11 @@ def read_logs():
                 
                 if name.startswith('FW'):
                     for log in logs:
-
                         date = get_normal_date(replace_all(log[1],'[]',''))
                         mes = log[0].split(':',1)[0]
                         
                         ip_and_mac = {'date' : date, 'message' : mes, 'subcategory' : sub}
                         log = merge_two_dicts(log_contains_ip_or_mac(log[0]),ip_and_mac)
-                        #print log
                         logs_data[name].append(log)
                 else:
                     for log in logs:
