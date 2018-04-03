@@ -1,7 +1,6 @@
 #!/usr/bin/python2
 from conf import *
-	
-#add functionality
+		
 class BlacklistScreen(object):
 	
 	def __init__(self, master):
@@ -311,6 +310,8 @@ class FeatureControlScreen(object):
 		
 		#Restarts the project with the new settings
 		Manager.restart_project(main)
+		
+		self.master.destroy()
 
 	def switch_to_edit_blacklist_screen(self):
 		""" This function is responsible for the functionality of Turn On\Off button """
@@ -334,16 +335,16 @@ class MainScreen(object):
 		switch_button.grid(row = 0, column = 0)
 
 		# create SMT Logs button in screen
-		logs_button = tk.Button(self.frame, text = 'SMT Logs', command = self.switch_to_smt_logs_screen, width = Globals.button_width, height = Globals.button_height)
-		logs_button.grid(row = 0, column = 1)
+		self.logs_button = tk.Button(self.frame, text = 'SMT Logs', command = self.switch_to_smt_logs_screen, width = Globals.button_width, height = Globals.button_height)
+		self.logs_button.grid(row = 0, column = 1)
 
 		# create Extra Info button in screen
-		info_button = tk.Button(self.frame, text = 'Extra Info', command = self.switch_to_extra_info_screen, width = Globals.button_width, height = Globals.button_height)
-		info_button.grid(row = 0, column = 2)
+		self.info_button = tk.Button(self.frame, text = 'Extra Info', command = self.switch_to_extra_info_screen, width = Globals.button_width, height = Globals.button_height)
+		self.info_button.grid(row = 0, column = 2)
 
 		# create Feature control button in screen
-		control_button = tk.Button(self.frame, text = 'Feature Control', command = self.switch_to_feature_control_screen, width = Globals.button_width, height = Globals.button_height)
-		control_button.grid(row = 1, column = 0)
+		self.control_button = tk.Button(self.frame, text = 'Feature Control', command = self.switch_to_feature_control_screen, width = Globals.button_width, height = Globals.button_height)
+		self.control_button.grid(row = 1, column = 0)
 
 		# create exit button in screen
 		exit_button = tk.Button(self.frame, text = 'Exit', command = self.exit_callback, width = Globals.button_width, height = Globals.button_height)
@@ -363,16 +364,25 @@ class MainScreen(object):
 		""" Opens the smt logs screen """
 		s = tk.Toplevel(self.master)
 		SmtLogsScreen(s)
+		self.logs_button["state"] = "disabled" 
+		self.master.wait_window(s)
+		self.logs_button["state"] = "normal"
 
 	def switch_to_extra_info_screen(self):
 		""" This function is responsible for opening/switching to the extra information screen """
 		s = tk.Toplevel(self.master)
 		ExtraInfoScreen(s)
+		self.info_button["state"] = "disabled" 
+		self.master.wait_window(s)
+		self.info_button["state"] = "normal"
 
 	def switch_to_feature_control_screen(self):
 		""" This function is responsible for opening/switching to the view logs screen """
 		s = tk.Toplevel(self.master)
 		FeatureControlScreen(s)
+		self.control_button["state"] = "disabled" 
+		self.master.wait_window(s)
+		self.control_button["state"] = "normal"
 		
 	def exit_callback(self):
 		""" This function is callback to an exit attempt by the user """
@@ -391,6 +401,42 @@ class MainScreen(object):
 			self.project_state.set('Turn On')
 
 
+def start_main_screen(master):
+	command = 'python2 Logger.py'
+	
+	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
+	print '[+++] Logger added'
+	t = threading.Thread(target=readEveryNSeconds)
+	t.start()
+	
+	Manager.load_state_conf()
+	main = MainScreen(master)
+	
+
+class SudoScreen(object):
+	def __init__(self,master):
+		self.master = master
+		self.master.title("Secure My Tux")
+
+		self.frame = tk.Frame(master)
+		
+		label = tk.Label(self.frame, text = 'Enter root password:')
+		label.pack()
+		
+		self.entry = tk.Entry(self.frame)
+		self.entry.pack()
+		
+		entry_button = tk.Button(self.frame, text = 'Enter', command = self.save_sudo_password)
+		entry_button.pack()
+		
+		self.frame.pack()
+
+	def save_sudo_password(self):
+		self.value = self.entry.get()
+		self.frame.destroy()
+		start_main_screen(self.master)
+		
+		
 def merge_two_dicts(x, y):
     z = x.copy()   # start with x's keys and values
     z.update(y)    # modifies z with y's keys and values & returns None
@@ -661,21 +707,26 @@ Supporting keys:
 
 def main():
 	global main,sudoPassword, contin
+	
+	master = tk.Tk()
+	SudoScreen(master)
+	master.mainloop()
+	"""
 	command = 'python2 Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 	print '[+++] Logger added'
 	t = threading.Thread(target=readEveryNSeconds)
 	t.start()
-	master = tk.Tk()
+	
 	Manager.load_state_conf()
 	main = MainScreen(master)
-	master.mainloop()
+	
 	logger.kill()
 	print '[---] Logger removed'
 	contin = False
 	print '[###] Please wait until the program gets killed'
-
+	"""
 
 if __name__ == '__main__':
 	main()
