@@ -429,12 +429,27 @@ class SudoScreen(object):
 		entry_button = tk.Button(self.frame, text = 'Enter', command = self.save_sudo_password)
 		entry_button.pack()
 		
+		self.error_label = tk.Label(self.frame, text = 'Incorrect password. Please try again.')
+		
 		self.frame.pack()
 
 	def save_sudo_password(self):
-		self.value = self.entry.get()
-		self.frame.destroy()
-		start_main_screen(self.master)
+		global sudoPassword
+		isCorrect = True
+		sudoPassword = self.entry.get()
+		
+		#try password
+		trial = Popen(['echo %s | sudo su' % (sudoPassword)], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=None, close_fds=True)
+		out,err = trial.communicate()
+		if 'Sorry' in err:
+			isCorrect = False
+			sudoPassword = ''
+		
+		if isCorrect:
+			self.frame.destroy()
+			start_main_screen(self.master)
+		else
+			self.error_label.pack()
 		
 		
 def merge_two_dicts(x, y):
