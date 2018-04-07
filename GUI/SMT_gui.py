@@ -402,7 +402,8 @@ class MainScreen(object):
 
 
 def start_main_screen(master):
-	command = 'python2 Logger.py'
+	global logger
+	command = 'python2 ../Logger/Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 	print '[+++] Logger added'
@@ -439,7 +440,7 @@ class SudoScreen(object):
 		sudoPassword = self.entry.get()
 		
 		#try password
-		trial = Popen(['echo %s | sudo su' % (sudoPassword)], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=None, close_fds=True)
+		trial = Popen(['echo %s | sudo -S echo sucessful_login' % (sudoPassword)], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 		out,err = trial.communicate()
 		if 'Sorry' in err:
 			isCorrect = False
@@ -448,7 +449,7 @@ class SudoScreen(object):
 		if isCorrect:
 			self.frame.destroy()
 			start_main_screen(self.master)
-		else
+		else:
 			self.error_label.pack()
 		
 		
@@ -722,26 +723,17 @@ Supporting keys:
 
 def main():
 	global main,sudoPassword, contin
-	
+	global logger #used in start_main_screen
+
 	master = tk.Tk()
 	SudoScreen(master)
 	master.mainloop()
-	"""
-	command = 'python2 Logger.py'
-	
-	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
-	print '[+++] Logger added'
-	t = threading.Thread(target=readEveryNSeconds)
-	t.start()
-	
-	Manager.load_state_conf()
-	main = MainScreen(master)
-	
+
 	logger.kill()
 	print '[---] Logger removed'
 	contin = False
 	print '[###] Please wait until the program gets killed'
-	"""
+	
 
 if __name__ == '__main__':
 	main()
