@@ -32,8 +32,8 @@ RDHCP = 'Rogue DHCP Detector'
 SHM = 'Syscall Hooking Manager'
 blacklist = 'blacklist'
 dhcp_server = 'server_address'
-sudoPassword = '954248630'
-
+sudoPassword = ''
+CHARACTERS_IN_LINE = 80
 RUN_EVERY = 30
 logs_data = {}
 subcategories_name_to_description = { #Don't worry about the lower and the uppercase - the code changes it to lowercase anyway 
@@ -49,6 +49,10 @@ subcategories_name_to_description = { #Don't worry about the lower and the upper
     'SHM_SP' : 'Permissions',
     'SHM_SS' : 'Sockets'
 }
+
+def runCommand(command):
+    global sudoPassword
+    Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
 
 class Globals(object):
 
@@ -109,7 +113,7 @@ class Manager(object):
 			print '[+++] ARP Spoofing added'
 			
 		if True == Globals.project_components_info[DOS][power_state_on]:
-			fw_param['features_string_arg'] += 'D'
+                    	fw_param['features_string_arg'] += 'D'
 			fw_param['fe_len'] += 1
 			print '[+++] DOS added'
 
@@ -121,14 +125,17 @@ class Manager(object):
 		
 		#Run Firewall
 		command = firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + ' ' + extra
-		print command
-		Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
-		print '[+++] Firewall added'
+		
+                print command
+		runCommand(command)
+                print '[+++] Firewall added'
+
 		if Globals.project_components_info[SHM][power_state_on] == True:
 			command = shm_activation
-			Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
-			print '[+++] Sys_hook_manager added'
-		Globals.is_project_on = True
+                        runCommand(command)
+		print '[+++] Sys_hook_manager added'
+		
+                Globals.is_project_on = True
 		main_window.flip_switch_button()
 			
 	@staticmethod
@@ -140,12 +147,12 @@ class Manager(object):
 		if Globals.is_project_on == True:
 		    #shutdown components
 		    command = fw_deactivation
-		    Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
-		    print '[---] Firewall removed'
+		    runCommand(command)
+                    print '[---] Firewall removed'
 		    if Globals.project_components_info[SHM][power_state_on] == True:
 		    	command = shm_deactivation
-		    	Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True) #RDHCP server ip parameters
-		    	print '[---] Sys_hook_manager removed'
+		    	runCommand(command)
+                        print '[---] Sys_hook_manager removed'
 		
 		Globals.is_project_on = False
 		main_window.flip_switch_button()

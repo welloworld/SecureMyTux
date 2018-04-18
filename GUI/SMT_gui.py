@@ -137,9 +137,9 @@ class SmtLogsScreen(object):
 		self.frame.pack()
 
 	def view_log_callback(self):
-		""" Uses self.params and functions from temp_logs_dividor.py to get info the user requested in self.params, than prints it to log_view """
-		global logs_data
-
+		""" Uses self.params and some other functions to get info the user requested in self.params, than prints it to log_view """
+		global logs_data, CHARACTERS_IN_LINE
+                
 		info = ''
 		mes=''
 		f = False
@@ -151,35 +151,50 @@ class SmtLogsScreen(object):
 					for l in info:
 						mes += str(l) + '\n'
 				else:
-
-					info = search_in_logs(key, self.extra_input.get())
-					for l in info:
-						for kk,vv in l.items():
-							mes += str(kk) + '=' + str(vv) + '\n\t'
-						#mes = mes[:-1]	
-						mes += '\n\t'
-
+					info = search_in_logs(key, self.extra_input.get()) #info is a list that contains dicts of logs by the key and value.
+                                        mes = getLogsAsStr(info)
+					
 		if info == '':
 			info = logs_data
-			#print info
 			if type(info) == dict:
 				for k,v in info.items():
-					mes += k +':\n\t'
-					for l in v:
-						for kk,vv in l.items():
-							mes += str(kk) + '=' + str(vv) + '\n\t'
-						#mes = mes[:-1]	
-						mes += '\n\t'
-
-					mes = mes[:-1] + '\n'
+					mes += k + ' ( %d Logs )' % (len(v)) + ':\n'
+					mes += getLogsAsStr(v)
+                                        mes = mes[:-1] + '\n'
 			
 
-		i=0
-		for j in logs_data.values():
-			i+=len(j)
+		#i=0
+		#for j in logs_data.values():
+                #    i+=len(j)
 		#print str(i)	
 		self.log_view.delete('1.0', tk.END)
 		self.log_view.insert('1.0', mes)
+
+
+def getLogsAsStr(info):
+    global CHARACTERS_IN_LINE
+    mes = ''
+    t_list = []
+    for l in info: #For log in list of log
+        temp=''
+        for kk,vv in l.items(): #For key,value in the log
+            temp += kk + ' = '
+            if kk == 'date':
+                vv = '%s/%s/%s %s:%s:%s' % (vv['day'],vv['month'],vv['year'],vv['hour'],vv['min'],vv['sec'])
+            temp += vv + '\n\t'
+        t_list.append(temp[:-1])
+            
+    last=[]
+    for i in t_list:
+        if not i in last:
+            last.append(i)
+    
+    for count,i in enumerate(last):
+        n = ' # %d # ' % (count)
+        seperator = '-' * (CHARACTERS_IN_LINE/2) + n + '-' * (CHARACTERS_IN_LINE/2 -len(n)) + '\n\t'
+        mes += seperator + i
+
+    return mes
 
 
 class ExtraInfoScreen(object):
@@ -350,7 +365,6 @@ class MainScreen(object):
 		exit_button = tk.Button(self.frame, text = 'Exit', command = self.exit_callback, width = Globals.button_width, height = Globals.button_height)
 		exit_button.grid(row = 1, column = 1)
 		self.frame.pack()
-
 		self.master.protocol("WM_DELETE_WINDOW", self.exit_callback)
 
 	def switch_callback(self):
@@ -406,10 +420,9 @@ def start_main_screen(master):
 	command = 'python2 ../Logger/Logger.py'
 	
 	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
-	print '[+++] Logger added'
+        print '[+++] Logger added'
 	t = threading.Thread(target=readEveryNSeconds)
 	t.start()
-	
 	Manager.load_state_conf()
 	main = MainScreen(master)
 	
@@ -447,7 +460,7 @@ class SudoScreen(object):
 			sudoPassword = ''
 		
 		if isCorrect:
-			self.frame.destroy()
+                        self.frame.destroy()
 			start_main_screen(self.master)
 		else:
 			self.error_label.pack()
@@ -687,7 +700,7 @@ def is_in_danger(): #This function should be checked!
 
 contin = True
 def readEveryNSeconds():
-    global RUN_EVERY,contin
+    global RUN_EVERY,contin,logs_data
     if contin:
 
         read_logs()  
@@ -724,16 +737,19 @@ Supporting keys:
 def main():
 	global main,sudoPassword, contin
 	global logger #used in start_main_screen
-
 	master = tk.Tk()
-	SudoScreen(master)
+        #trial = Popen(['echo %s | sudo -S echo sucessful_login' % ('\x01')], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+	#out,err = trial.communicate()
+        #if 'sorry' in err:
+        SudoScreen(master)
 	master.mainloop()
 
 	logger.kill()
-	print '[---] Logger removed'
+        print '[---] Logger removed'
 	contin = False
 	print '[###] Please wait until the program gets killed'
-	
+	command = 'rm /var/log/smt/*'
+        runCommand(command)
 
 if __name__ == '__main__':
 	main()
