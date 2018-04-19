@@ -55,6 +55,9 @@ class BlacklistScreen(object):
 		for a in Globals.project_components_info[blacklist]['addresses']:
 			self.blacklist_view.insert(tk.INSERT, a + '\n')
 
+	def exit(self):
+		self.master.destroy()
+
 
 class SelectUsersScreen(object):
 	
@@ -170,6 +173,9 @@ class SmtLogsScreen(object):
 		self.log_view.delete('1.0', tk.END)
 		self.log_view.insert('1.0', mes)
 
+	def exit(self):
+		self.master.destroy()
+
 
 def getLogsAsStr(info):
     global CHARACTERS_IN_LINE
@@ -269,6 +275,9 @@ class ExtraInfoScreen(object):
 		self.master.wait_window(s)
 		return filter(lambda x: Globals.selected_users[x].get() == True, Globals.selected_users)
 
+	def exit(self):
+		self.master.destroy()
+
 
 class FeatureControlScreen(object):
 
@@ -333,11 +342,24 @@ class FeatureControlScreen(object):
 		s = tk.Toplevel(self.master)
 		BlacklistScreen(s)	
 
+	def exit(self):
+		self.master.destroy()
+
 
 class MainScreen(object):
 	""" Represents the first screen in the GUI. The general menu. """
 
 	def __init__(self, master):
+		#preparation for functionality
+		command = 'python2 ../Logger/Logger.py'
+		self.logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
+		print '[+++] Logger added'
+		t = threading.Thread(target=readEveryNSeconds)
+		t.start()
+		Manager.load_state_conf()
+
+		#boot main screen
+		self.open_screens=[]
 		self.master = master
 		self.master.title("Secure My Tux")
 
@@ -377,35 +399,46 @@ class MainScreen(object):
 	def switch_to_smt_logs_screen(self):
 		""" Opens the smt logs screen """
 		s = tk.Toplevel(self.master)
-		SmtLogsScreen(s)
+		sc = SmtLogsScreen(s)
+		self.open_screens.append(sc)
 		self.logs_button["state"] = "disabled" 
 		self.master.wait_window(s)
 		self.logs_button["state"] = "normal"
+		self.open_screens.remove(sc)
 
 	def switch_to_extra_info_screen(self):
 		""" This function is responsible for opening/switching to the extra information screen """
 		s = tk.Toplevel(self.master)
-		ExtraInfoScreen(s)
+		sc = ExtraInfoScreen(s)
+		self.open_screens.append(sc)
 		self.info_button["state"] = "disabled" 
 		self.master.wait_window(s)
 		self.info_button["state"] = "normal"
+		self.open_screens.remove(sc)
 
 	def switch_to_feature_control_screen(self):
 		""" This function is responsible for opening/switching to the view logs screen """
 		s = tk.Toplevel(self.master)
-		FeatureControlScreen(s)
+		sc = FeatureControlScreen(s)
+		self.open_screens.append(sc)
 		self.control_button["state"] = "disabled" 
 		self.master.wait_window(s)
 		self.control_button["state"] = "normal"
+		self.open_screens.remove(sc)
 		
 	def exit_callback(self):
 		""" This function is callback to an exit attempt by the user """
+		for x in self.open_screens:
+			x.exit()
+
 		Manager.save_state_conf()
 		Manager.clear_project(self)
 
-		self.master.quit()
-		self.master.destroy()
+		self.master.quit()# will quit mainloop and than in main will close tkinter
 		print '[---] GUI destroyed'
+
+		self.logger.kill()
+		print '[---] Logger removed'
 
 	def flip_switch_button(self):
 		""" Changes the switch button to Off and On"""
@@ -413,18 +446,6 @@ class MainScreen(object):
 			self.project_state.set('Turn Off')
 		else:
 			self.project_state.set('Turn On')
-
-
-def start_main_screen(master):
-	global logger
-	command = 'python2 ../Logger/Logger.py'
-	
-	logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
-        print '[+++] Logger added'
-	t = threading.Thread(target=readEveryNSeconds)
-	t.start()
-	Manager.load_state_conf()
-	main = MainScreen(master)
 	
 
 class SudoScreen(object):
@@ -460,8 +481,8 @@ class SudoScreen(object):
 			sudoPassword = ''
 		
 		if isCorrect:
-                        self.frame.destroy()
-			start_main_screen(self.master)
+			self.frame.destroy()
+			main = MainScreen(self.master)
 		else:
 			self.error_label.pack()
 		
@@ -738,18 +759,15 @@ def main():
 	global main,sudoPassword, contin
 	global logger #used in start_main_screen
 	master = tk.Tk()
-        #trial = Popen(['echo %s | sudo -S echo sucessful_login' % ('\x01')], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
-	#out,err = trial.communicate()
-        #if 'sorry' in err:
-        SudoScreen(master)
-	master.mainloop()
 
-	logger.kill()
-        print '[---] Logger removed'
+	SudoScreen(master)
+	master.mainloop()
+	master.destroy()
+
 	contin = False
 	print '[###] Please wait until the program gets killed'
 	command = 'rm /var/log/smt/*'
-        runCommand(command)
+	runCommand(command)
 
 if __name__ == '__main__':
 	main()
