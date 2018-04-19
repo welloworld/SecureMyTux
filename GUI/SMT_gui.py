@@ -352,7 +352,7 @@ class MainScreen(object):
 	def __init__(self, master):
 		#preparation for functionality
 		command = 'python2 ../Logger/Logger.py'
-		self.logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True)
+		self.logger = Popen(['echo %s | sudo -S %s' % (sudoPassword, command)], shell=True,stdin=None, stdout=None, stderr=None, close_fds=True, preexec_fn=os.setsid)
 		print '[+++] Logger added'
 		t = threading.Thread(target=readEveryNSeconds)
 		t.start()
@@ -437,7 +437,8 @@ class MainScreen(object):
 		self.master.quit()# will quit mainloop and than in main will close tkinter
 		print '[---] GUI destroyed'
 
-		self.logger.kill()
+		#self.logger.kill()
+		os.killpg(os.getpgid(self.logger.pid), signal.SIGTERM)
 		print '[---] Logger removed'
 
 	def flip_switch_button(self):

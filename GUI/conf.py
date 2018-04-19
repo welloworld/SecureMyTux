@@ -11,6 +11,7 @@ from subprocess import call
 import pickle
 import os
 import re
+import signal
 from datetime import datetime
 
 from time import strptime as time_strptime
