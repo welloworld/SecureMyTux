@@ -98,27 +98,14 @@ class SmtLogsScreen(object):
 
 		self.frame = tk.Frame(self.master)
 
-		self.params = {'uid': {'on': tk.BooleanVar()} ,
-		 'pid': {'on': tk.BooleanVar()} ,
-		 'mac': {'on': tk.BooleanVar()} ,
-		 'ip': {'on': tk.BooleanVar()} ,
-		 'syscall_name': {'on': tk.BooleanVar()} ,
-		 'path': {'on': tk.BooleanVar()} ,
-		 'subcategory': {'on': tk.BooleanVar()} ,
-		 'date': {'on': tk.BooleanVar()}
-		 }
+		self.options = ['Show all','uid','pid','mac','ip','syscall_name','path','subcategory','date']
 
 		cur_column = 0
-		menuText = tk.StringVar()
-		menuText.set('Sort by:')
-		mb = tk.Menubutton( self.frame, textvariable = menuText, relief = tk.RAISED)
-		mb.grid(row = 0, column = 0)
-		mb.menu = tk.Menu(mb, tearoff = 0)
-		mb['menu'] = mb.menu
+		self.menuText = tk.StringVar()
+		self.menuText.set(self.options[0])
+		mb = tk.OptionMenu( self.frame, self.menuText, *self.options)
+		mb.grid(row = 0, column = cur_column)
 
-		for component_name, settings in self.params.items():
-			mb.menu.add_checkbutton(label = component_name, variable = settings['on'])#, command = lambda: map(lambda x: x.deselect() ,mb.menu))
-		
 		cur_column += 1
 
 		self.extra_input = tk.Entry(self.frame, text='Specific search', width=15)
@@ -145,26 +132,22 @@ class SmtLogsScreen(object):
                 
 		info = ''
 		mes=''
-		f = False
-		for key, settings in self.params.items():
-			if settings['on'].get() == True:
-				if self.extra_input.get() == '':
-					#print key
-					info = get_all_kinds_of(key)
-					for l in info:
-						mes += str(l) + '\n'
-				else:
-					info = search_in_logs(key, self.extra_input.get()) #info is a list that contains dicts of logs by the key and value.
-                                        mes = getLogsAsStr(info)
-					
-		if info == '':
+
+		if self.menuText.get() == 'Show all':
 			info = logs_data
 			if type(info) == dict:
 				for k,v in info.items():
 					mes += k + ' ( %d Logs )' % (len(v)) + ':\n'
 					mes += getLogsAsStr(v)
-                                        mes = mes[:-1] + '\n'
-			
+					mes = mes[:-1] + '\n'
+		else:
+			if self.extra_input.get() == '':
+				info = get_all_kinds_of(self.menuText.get())
+				for l in info:
+					mes += str(l) + '\n'
+			else:
+				info = search_in_logs(self.menuText.get(), self.extra_input.get()) #info is a list that contains dicts of logs by the key and value.
+				mes = getLogsAsStr(info)
 
 		#i=0
 		#for j in logs_data.values():
