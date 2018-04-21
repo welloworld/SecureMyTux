@@ -117,7 +117,7 @@ class SmtLogsScreen(object):
 		mb['menu'] = mb.menu
 
 		for component_name, settings in self.params.items():
-			mb.menu.add_checkbutton(label = component_name, variable = settings['on'])
+			mb.menu.add_checkbutton(label = component_name, variable = settings['on'])#, command = lambda: map(lambda x: x.deselect() ,mb.menu))
 		
 		cur_column += 1
 
@@ -469,6 +469,8 @@ class SudoScreen(object):
 		
 		self.frame.pack()
 
+		self.master.protocol("WM_DELETE_WINDOW", self.exit_callback)
+
 	def save_sudo_password(self):
 		global sudoPassword
 		isCorrect = True
@@ -486,6 +488,9 @@ class SudoScreen(object):
 			main = MainScreen(self.master)
 		else:
 			self.error_label.pack()
+
+	def exit_callback(self):
+		self.master.quit()
 		
 		
 def merge_two_dicts(x, y):
@@ -759,9 +764,16 @@ Supporting keys:
 def main():
 	global main,sudoPassword, contin
 	global logger #used in start_main_screen
+	sudoPassword = ''
 	master = tk.Tk()
 
-	SudoScreen(master)
+	trial = Popen(['echo '' | sudo -S echo successful_login'], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+	out,err = trial.communicate()
+	if 'Sorry' in err:
+		SudoScreen(master)#get sudo password from user for permissions
+	else:
+		MainScreen(master)
+
 	master.mainloop()
 	master.destroy()
 
