@@ -32,7 +32,7 @@ class BlacklistScreen(object):
 		if (not address in Globals.project_components_info[blacklist]['addresses'] and (is_mac(address) or is_ip(address))):
 			#print 'good'
 			Globals.project_components_info[blacklist]['addresses'].append(address)
-			Globals.project_components_info[blacklist]['length'] += 1
+                        Globals.project_components_info[blacklist]['length'] += len(address)
 		print Globals.project_components_info[blacklist]['addresses']
 		print Globals.project_components_info[blacklist]['length']		
 		#else:
@@ -44,7 +44,7 @@ class BlacklistScreen(object):
 		old = Globals.project_components_info[blacklist]['addresses'][:]
 		Globals.project_components_info[blacklist]['addresses'] = filter(lambda x: x != self.address_input.get() , Globals.project_components_info[blacklist]['addresses'])
 		if old != Globals.project_components_info[blacklist]['addresses']:
-			Globals.project_components_info[blacklist]['length'] -= 1
+			Globals.project_components_info[blacklist]['length'] -= len(address)
 		print Globals.project_components_info[blacklist]['addresses']
 		print Globals.project_components_info[blacklist]['length']	
 		self.show_blacklist()
@@ -421,7 +421,9 @@ class MainScreen(object):
 		print '[---] GUI destroyed'
 
 		#self.logger.kill()
-		os.killpg(os.getpgid(self.logger.pid), signal.SIGTERM)
+                pid = os.getpgid(self.logger.pid)
+                print pid
+                os.killpg(pid , signal.SIGTERM)
 		print '[---] Logger removed'
 
 	def flip_switch_button(self):

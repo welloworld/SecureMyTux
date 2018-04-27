@@ -5,9 +5,8 @@ blacklist *bl = NULL;// MUST be initialized here because it is defined in blackl
 /*
 * This function takes a formated string and converts it into a blacklist.
 * Input: 
-*	string in the following format: XXXX(ip address is 4 chars) XXXXXX(mac address is 6 chars)
-* and a space between each address. Can contain many addresses and the order doesn't have an effect 
-* (IMPORTANT: String must contain space char after every address)
+*	string in the following format: 127.0.0.1,192.168.1.1...
+* and a , between each address. Can contain many addresses and the order doesn't have an effect 
 *	len is the length of the string
 * Output:
 *	blacklist
@@ -25,6 +24,7 @@ void string_to_blacklist(char str[], int len)
 	//unsigned char t = str[0];
 	_init_blacklist();
 	
+		
 	//printk("string to black: %s %lu %s\n",str,long_address,dot_ip);
 	addr_len = 0;
 	for(i = 0; i < len; i++)
@@ -81,6 +81,8 @@ void string_to_blacklist(char str[], int len)
 		}
 		
 	}
+	dmesg_blacklist("Appending IP to the blacklist: [%s]\n",str);
+	
 
 }
 
@@ -134,7 +136,7 @@ void append_to_blacklist(unsigned char *addr, int addr_len)
 {
 	int i = 0;// used for deep copy address
 	mac_node* last_mac;
-
+	printk("")
 	if(IP_ALEN == addr_len)// its an ip node
 	{
 		ip_node * last = bl->_ip_list;

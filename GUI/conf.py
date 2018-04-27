@@ -125,7 +125,7 @@ class Manager(object):
 			print '[+++] RDHCP added'
 		
 		#Run Firewall
-		command = firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(Globals.project_components_info[blacklist]['length']) + ' ' + extra
+		command = firewall_activation + 'features_string_arg='+fw_param['features_string_arg'] + ' fe_len='+str(fw_param['fe_len']) + ' blacklist_string_arg='+ ','.join(Globals.project_components_info[blacklist]['addresses']) + ' bl_len='+ str(len(','.join(Globals.project_components_info[blacklist]['addresses']))) + ' ' + extra
 		
                 print command
 		runCommand(command)

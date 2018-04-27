@@ -20,6 +20,7 @@ FIREWALL_MISC = '[FM]'
 FIREWALL_ARP = '[FA]'
 FIREWALL_DOS = '[FD]'
 FIREWALL_RDHCP = '[FR]'
+FIREWALL_BLACKLIST = '[FB]'
 
 SYSCALL_HOOKING_MANAGER = '[SH]'
 SYSCALL_HOOKING_FILES = '[SF]'
@@ -34,6 +35,7 @@ ARP_KEY = 'FW_ARP'
 DOS_KEY = 'FW_DOS'
 RDHCP_KEY = 'FW_DHCP'
 MISC_KEY = 'FW_MISC'
+BLACKLIST_KEY = 'FW_BL'
 SHM_MANAGER_KEY = 'SHM_SH'
 SHM_FILES_KEY = 'SHM_SF'
 SHM_SOCKETS_KEY = 'SHM_SS'
@@ -58,7 +60,8 @@ logs_by_affiliation = {
 	SHM_DIRS_KEY: [],
 	SHM_PERMISSIONS_KEY: [],
 	SHM_FDS_KEY: [],
-	SHM_EXECUTIONS_KEY: []
+	SHM_EXECUTIONS_KEY: [],
+        BLACKLIST_KEY: []
 }
 
 
@@ -116,7 +119,9 @@ while True:
 
 		elif SYSCALL_HOOKING_EXECUTIONS in log:
 			logs_by_affiliation[SHM_EXECUTIONS_KEY].append(log[len(SYSCALL_HOOKING_EXECUTIONS):])
-
+                elif FIREWALL_BLACKLIST in log:
+			logs_by_affiliation[BLACKLIST_KEY].append(log[len(FIREWALL_BLACKLIST):])
+                
 
 
 	for key, log in logs_by_affiliation.iteritems():
