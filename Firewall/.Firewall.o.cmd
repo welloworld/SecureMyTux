@@ -243,6 +243,9 @@ deps_/home/nevo/Desktop/SecureMyTux/Firewall/Firewall.o := \
   arch/x86/include/asm/pgtable_64_types.h \
   arch/x86/include/asm/sparsemem.h \
   include/asm-generic/pgtable-nop4d.h \
+  arch/x86/include/asm/nospec-branch.h \
+    $(wildcard include/config/retpoline.h) \
+  arch/x86/include/asm/alternative-asm.h \
   arch/x86/include/asm/spinlock_types.h \
     $(wildcard include/config/paravirt/spinlocks.h) \
   include/asm-generic/qspinlock_types.h \

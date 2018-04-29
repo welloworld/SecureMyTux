@@ -29,7 +29,7 @@
 #include "../log_protocol.h"
 
 #define NUMBER_OF_ARP_FOR_SPOOF 5
-#define RELEVENT_SECONDS_FOR_SPOOF 1
+#define RELEVENT_SECONDS_FOR_SPOOF 5
 #define MAC_LEN 6
 #define TRUE 1
 #define FALSE 0
