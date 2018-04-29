@@ -2,7 +2,7 @@
 
 void **sys_table;
 
-//README deleted 
+
 
 /* The init function for the module. Initializes the sys_table and all of the original syscalls we use.
 * Hook all the syscalls we need with our own functions.

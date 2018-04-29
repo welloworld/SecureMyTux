@@ -305,6 +305,7 @@ class FeatureControlScreen(object):
 	def save_callback(self):
 		""" This function saves changes made to the components state """
 		#Commit changes to Globals.project_components_info
+		global main
 		for name,state_var in self.state_buttons:
 			Globals.project_components_info[name][power_state_on] = state_var.get()
 		

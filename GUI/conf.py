@@ -7,6 +7,7 @@ sys.path.insert(0, 'tools/') #Import inside directory python codes
 import subprocess
 from subprocess import Popen
 from subprocess import call
+from SMT_gui import MainScreen
 
 import pickle
 import os
@@ -136,7 +137,7 @@ class Manager(object):
                         runCommand(command)
 		print '[+++] Sys_hook_manager added'
 		
-                Globals.is_project_on = True
+		Globals.is_project_on = True
 		main_window.flip_switch_button()
 			
 	@staticmethod
@@ -147,13 +148,13 @@ class Manager(object):
 		
 		if Globals.is_project_on == True:
 		    #shutdown components
-		    command = fw_deactivation
-		    runCommand(command)
-                    print '[---] Firewall removed'
-		    if Globals.project_components_info[SHM][power_state_on] == True:
-		    	command = shm_deactivation
-		    	runCommand(command)
-                        print '[---] Sys_hook_manager removed'
+			command = fw_deactivation
+			runCommand(command)
+			print '[---] Firewall removed'
+			if Globals.project_components_info[SHM][power_state_on] == True:
+				command = shm_deactivation
+				runCommand(command)
+				print '[---] Sys_hook_manager removed'
 		
 		Globals.is_project_on = False
 		main_window.flip_switch_button()
