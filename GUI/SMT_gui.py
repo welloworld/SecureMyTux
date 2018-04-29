@@ -43,8 +43,8 @@ class BlacklistScreen(object):
 		""" This function is responsible for adding addresses to the blacklist """
 		old = Globals.project_components_info[blacklist]['addresses'][:]
 		Globals.project_components_info[blacklist]['addresses'] = filter(lambda x: x != self.address_input.get() , Globals.project_components_info[blacklist]['addresses'])
-		if old != Globals.project_components_info[blacklist]['addresses']:
-			Globals.project_components_info[blacklist]['length'] -= len(address)
+		#if old != Globals.project_components_info[blacklist]['addresses']:
+			#Globals.project_components_info[blacklist]['length'] -= len(address)
 		print Globals.project_components_info[blacklist]['addresses']
 		print Globals.project_components_info[blacklist]['length']	
 		self.show_blacklist()

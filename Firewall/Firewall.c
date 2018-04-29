@@ -17,7 +17,7 @@ int __init main(void)
 	int i=0;
 	init_blacklist();
 	init_third_layer_filter();
-
+	//printk("Over here!\n");
 	//_print_start_or_end(0); //0 means we just started the module
 
 	for(i=0;i<fe_len;i++)

@@ -24,11 +24,12 @@ void string_to_blacklist(char str[], int len)
 	//unsigned char t = str[0];
 	_init_blacklist();
 	
-		
+	printk("In string_to_blacklist\n");
 	//printk("string to black: %s %lu %s\n",str,long_address,dot_ip);
 	addr_len = 0;
 	for(i = 0; i < len; i++)
 	{
+		printk("%d  [%c]\n",curr_len,str[i]);
 		if(IP_SEPERATOR == str[i])
 		{
 			temp_addr[addr_len] = '\0';
@@ -49,9 +50,11 @@ void string_to_blacklist(char str[], int len)
 		}
 		else if(SEPERATOR == str[i])
 		{
-
+			
+			printk("%d\n",curr_len);
 			if(IP_ALEN == curr_len)
 			{
+				dmesg_blacklist("Trying IP to the blacklist $@#: [%d.%d.%d.%d]\n",curr_addr[0],curr_addr[1],curr_addr[2],curr_addr[3]);
 				// add the address to the ip_list
 				append_to_blacklist(curr_addr, IP_ALEN);
 				for(j=0;j<IP_ALEN;j++)
@@ -81,7 +84,7 @@ void string_to_blacklist(char str[], int len)
 		}
 		
 	}
-	dmesg_blacklist("Appending IP to the blacklist: [%s]\n",str);
+	//dmesg_blacklist("Appending IP to the blacklist: [%s]\n",str);
 	
 
 }
@@ -136,11 +139,9 @@ void append_to_blacklist(unsigned char *addr, int addr_len)
 {
 	int i = 0;// used for deep copy address
 	mac_node* last_mac;
-	printk("")
 	if(IP_ALEN == addr_len)// its an ip node
 	{
 		ip_node * last = bl->_ip_list;
-
 		if(NULL == last)
 		{
 			bl->_ip_list = (ip_node*)alloc_node(IP_ALEN);
@@ -162,6 +163,8 @@ void append_to_blacklist(unsigned char *addr, int addr_len)
 
 		bl->ip_list_size++;
 		dmesg_blacklist("Appending IP to the blacklist: [%d.%d.%d.%d]\n",addr[0],addr[1],addr[2],addr[3]);
+		
+
 	}
 	else// its a mac node
 	{
