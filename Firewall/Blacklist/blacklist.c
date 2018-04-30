@@ -29,7 +29,6 @@ void string_to_blacklist(char str[], int len)
 	addr_len = 0;
 	for(i = 0; i < len; i++)
 	{
-		printk("%d  [%c]\n",curr_len,str[i]);
 		if(IP_SEPERATOR == str[i])
 		{
 			temp_addr[addr_len] = '\0';
@@ -51,10 +50,10 @@ void string_to_blacklist(char str[], int len)
 		else if(SEPERATOR == str[i])
 		{
 			
-			printk("%d\n",curr_len);
+			//printk("%d\n",curr_len);
 			if(IP_ALEN == curr_len)
 			{
-				dmesg_blacklist("Trying IP to the blacklist $@#: [%d.%d.%d.%d]\n",curr_addr[0],curr_addr[1],curr_addr[2],curr_addr[3]);
+				//dmesg_blacklist("Trying IP to the blacklist $@#: [%d.%d.%d.%d]\n",curr_addr[0],curr_addr[1],curr_addr[2],curr_addr[3]);
 				// add the address to the ip_list
 				append_to_blacklist(curr_addr, IP_ALEN);
 				for(j=0;j<IP_ALEN;j++)

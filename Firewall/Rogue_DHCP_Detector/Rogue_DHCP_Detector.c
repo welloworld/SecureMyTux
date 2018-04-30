@@ -36,7 +36,7 @@ void init_dhcp_detector(char server[IP_ALEN],int len)
 	//printk("%s\n",temp_addr);
 	kstrtol(temp_addr, 10,&t);
 	dhcp_server[curr_len++]=(unsigned char)t;	
-	dmesg_dhcp("Default DHCP server is: %d.%d.%d.%d\n",dhcp_server[0],dhcp_server[1],dhcp_server[2],dhcp_server[3]);
+	dmesg_dhcp("Default DHCP server: [%d.%d.%d.%d]\n",dhcp_server[0],dhcp_server[1],dhcp_server[2],dhcp_server[3]);
 }
 
 /*
