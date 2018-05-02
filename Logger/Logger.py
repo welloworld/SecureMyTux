@@ -94,7 +94,7 @@ while True:
 			logs_by_affiliation[DOS_KEY].append(log[len(FIREWALL_DOS):])
 
 		elif FIREWALL_RDHCP in log:
-			logs_by_affiliation[RDHCP_KEY].append(log[len(FIREWALL_RDHCP):]) #Are you mean len(FIREWALL_RDHCP) ?
+			logs_by_affiliation[RDHCP_KEY].append(log[len(FIREWALL_RDHCP):])
 			
 		elif FIREWALL_MISC in log:
 			logs_by_affiliation[MISC_KEY].append(log[len(FIREWALL_MISC):])

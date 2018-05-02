@@ -8,11 +8,25 @@ defs = '''#define SYSCALL_HOOKING_MANAGER "[SH]"
 
 print_function = '#define dmesg_~(fmt, ...) printk(KERN_INFO MODULE_SIGNATURE & pr_fmt(fmt), ##__VA_ARGS__)'
 check_if_logger = 'elif ^ in log:\n\tlogs_by_affiliation[&].append(log[len(^):])'
+"""
+This function creates a function by C-define-conventions.
+input:
+    define string
+Output:    
+    function by the define
+"""
 def create_function(define):
 	global print_function
 	name = define.split(' ')[1]
 
 	return print_function.replace('&',name).replace('~', 'shm_' + name.split('_')[2].lower())
+"""
+This function creates a logger definition.
+input:
+    define string
+Output:    
+    logger definition by the define
+"""
 
 def create_logger_def(define):
 	value = define.split(' ')[2]
@@ -20,11 +34,26 @@ def create_logger_def(define):
 
 	return name + ' = ' + value.replace('\"','\'')
 
+"""
+This function creates a logger key by python-keys-conventions.
+input:
+    define string
+Output:    
+    logger-key by the define
+"""
+
 def create_logger_key(define):
 	value = define.split(' ')[2]
 	name = define.split(' ')[1]
 
 	return 'SHM_' + name.split('_')[2] + '_KEY = \'SHM_' + value.replace('\"','').replace('[','').replace(']','') + '\''
+"""
+This function creates a logger-condition by python-condition-conventions.
+input:
+    define string
+Output: 
+    logger-condition by the define
+"""
 
 def create_logger_if(define):
 	global check_if_logger
@@ -32,6 +61,13 @@ def create_logger_if(define):
 	key = 'SHM_' + name.split('_')[2] + '_KEY' 
 
 	return check_if_logger.replace('^',name).replace('&',key)
+"""
+This function creates a logger-declaration by python-declaration-conventions.
+input:
+    define string
+Output:    
+    logger-declaration by the define
+"""
 
 def create_logger_decl(define):
 	name = define.split(' ')[1]

