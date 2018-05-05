@@ -569,7 +569,7 @@ def log_contains_ip_or_mac(l):
 
 
 def read_logs():
-	''' This function reads all of the module logs from /var/log/smt '''
+    ''' This function reads all of the module logs from /var/log/smt '''
     global logs_data
     logs_data_temp={}
     smt_dir = '/var/log/smt'
