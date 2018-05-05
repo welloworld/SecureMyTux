@@ -1,9 +1,12 @@
 #!/usr/bin/python2
 from conf import *
-		
+
+#This class represents the Edit Blacklist screen which lets the user edit the blacklist (add, delete, and view records)
 class BlacklistScreen(object):
 	
+
 	def __init__(self, master):
+		''' This function initializes the blacklist screen with title and widgets.'''
 		self.master = master
 		self.master.title("Blacklist")
 
@@ -25,7 +28,8 @@ class BlacklistScreen(object):
 		self.show_blacklist()
 				
 	def add_address_callback(self):
-		""" This function is responsible for adding addresses to the blacklist """
+		""" This function is responsible for adding addresses to the blacklist (adds the address written in the input field on the screen.
+		After addition will refresh blacklist text box. """
 		address = self.address_input.get()
 		print Globals.project_components_info[blacklist]['addresses']
 		print Globals.project_components_info[blacklist]['length']	
@@ -40,8 +44,10 @@ class BlacklistScreen(object):
 		self.show_blacklist()
 
 	def delete_address_callback(self):
-		""" This function is responsible for adding addresses to the blacklist """
-		old = Globals.project_components_info[blacklist]['addresses'][:]
+		''' This function is responsible for deleting addresses from the blacklist (deletes the address written in the input field on the screen).
+		After deleting the address will refresh the blacklist text box. '''
+
+		#old = Globals.project_components_info[blacklist]['addresses'][:]
 		Globals.project_components_info[blacklist]['addresses'] = filter(lambda x: x != self.address_input.get() , Globals.project_components_info[blacklist]['addresses'])
 		#if old != Globals.project_components_info[blacklist]['addresses']:
 			#Globals.project_components_info[blacklist]['length'] -= len(address)
@@ -50,15 +56,16 @@ class BlacklistScreen(object):
 		self.show_blacklist()
 
 	def show_blacklist(self):
-		""" Print the blacklist """
+		""" Print the blacklist into the Text widget """
 		self.blacklist_view.delete('1.0', tk.END)
 		for a in Globals.project_components_info[blacklist]['addresses']:
 			self.blacklist_view.insert(tk.INSERT, a + '\n')
 
 	def exit(self):
+		''' Close the screen '''
 		self.master.destroy()
 
-
+# This class opens a screen which shows the user all of the existing users on the system and lets him choose by checking a checkbox which users he is interested in
 class SelectUsersScreen(object):
 	
 	def __init__(self, master):
@@ -66,13 +73,13 @@ class SelectUsersScreen(object):
 		self.master.title("Select Users")
 
 		self.frame = tk.Frame(master)
-
+		# get all of the existing usernames
 		dmesg = subprocess.Popen(['getent passwd | cut -d : -f 1'], stdout=subprocess.PIPE, shell=True)
 		(out, err) = dmesg.communicate()
 
 		cur_column = 0
 		cur_row = 0
-		# create a switch button for each component
+		# create a checkbutton for each username
 		for username in out.split('\n')[:-1]:
 			var = tk.BooleanVar()
 			Globals.selected_users[username] = var
@@ -89,10 +96,11 @@ class SelectUsersScreen(object):
 
 		self.frame.pack()
 
-
+# This class represents a screen which allows the user to watch and search the SMT logs.
 class SmtLogsScreen(object):
 
 	def __init__(self, master):
+		''' Initialize the screen with the widgets '''
 		self.master = master
 		self.master.title("SMT Logs")
 
@@ -101,26 +109,29 @@ class SmtLogsScreen(object):
 		self.options = ['Show all','uid','pid','mac','ip','syscall_name','path','subcategory','date']
 
 		cur_column = 0
+		# Create the sort menu
 		self.menuText = tk.StringVar()
 		self.menuText.set(self.options[0])
 		mb = tk.OptionMenu( self.frame, self.menuText, *self.options)
 		mb.grid(row = 0, column = cur_column)
 
 		cur_column += 1
-
+		# Create the search input field
 		self.extra_input = tk.Entry(self.frame, text='Specific search', width=15)
 		self.extra_input.grid(row = 0, column = cur_column)
 
 		cur_column += 1
-
+		# Create show logs button
 		self.show_button = tk.Button(self.frame, text = 'Show Logs', command = lambda: self.view_log_callback(), width = Globals.button_width, height = Globals.button_height)
 		self.show_button.grid(row = 0, column = cur_column)
 		cur_column += 1
 
+		# Create delete logs button
 		self.delete_button = tk.Button(self.frame, text = 'Delete ALL Logs', command = delete_all_logs, width = Globals.button_width, height = Globals.button_height)
 		self.delete_button.grid(row = 0, column = cur_column)
 		cur_column += 1
 
+		# Create text box which will contain the logs
 		self.log_view = tk.Text(self.frame, height = 30)
 		self.log_view.grid(row = 1, columnspan = cur_column)
 
@@ -133,19 +144,19 @@ class SmtLogsScreen(object):
 		info = ''
 		mes=''
 
-		if self.menuText.get() == 'Show all':
+		if self.menuText.get() == 'Show all':# No sorting just display all logs
 			info = logs_data
 			if type(info) == dict:
 				for k,v in info.items():
 					mes += k + ' ( %d Logs )' % (len(v)) + ':\n'
 					mes += getLogsAsStr(v)
 					mes = mes[:-1] + '\n'
-		else:
-			if self.extra_input.get() == '':
+		else:# Sort option chosen
+			if self.extra_input.get() == '':# Sort option without special input
 				info = get_all_kinds_of(self.menuText.get())
 				for l in info:
 					mes += str(l) + '\n'
-			else:
+			else:# Sort option with special input
 				info = search_in_logs(self.menuText.get(), self.extra_input.get()) #info is a list that contains dicts of logs by the key and value.
 				mes = getLogsAsStr(info)
 
@@ -159,8 +170,9 @@ class SmtLogsScreen(object):
 	def exit(self):
 		self.master.destroy()
 
-
+# This function converts logs dictionary into string
 def getLogsAsStr(info):
+
     global CHARACTERS_IN_LINE
     mes = ''
     t_list = []
@@ -185,10 +197,11 @@ def getLogsAsStr(info):
 
     return mes
 
-
+# This class represents a screen with buttons to show information like logged in users, who can use sudo, what permissions users has, and user processes history
 class ExtraInfoScreen(object):
 
 	def __init__(self, master):
+		''' Initializes screen with widgets '''
 		self.master = master
 		self.master.title("Information")
 
@@ -227,7 +240,7 @@ class ExtraInfoScreen(object):
 		self.frame.pack()
 
 	def view_log_callback(self, func, func_param = None):
-		""" This function shows a log of all connected users """
+		""" This function prints the result of the func parameter into the log text box. """
 		beginning = '1.0'# location to insert text
 		self.log_view.delete(beginning, tk.END)
 		if func_param == None:
@@ -252,27 +265,29 @@ class ExtraInfoScreen(object):
 		self.log_view.pack()	
 		"""
 	def get_users_from_user(self):
-		""" Let the user choose which users he is interested in and return his choice"""
+		""" Creates a screen to let the user choose which users he is interested in and return his choice"""
 		s = tk.Toplevel(self.master)
 		SelectUsersScreen(s)
 		self.master.wait_window(s)
 		return filter(lambda x: Globals.selected_users[x].get() == True, Globals.selected_users)
 
 	def exit(self):
+		""" Close the screen """
 		self.master.destroy()
 
-
+# This class represents a screen which lets the user change the on/off settings of components in the project and edit the blacklist
 class FeatureControlScreen(object):
 
 	state_buttons = []
 	
 	def __init__(self, master):
+		''' Initialize the screen and widgets '''
 		self.master = master
 		self.master.title("Features Control")
 		self.frame = tk.Frame(master)
 
 		cur_row = 0
-		# create a switch button for each component
+		# create a check button for each component
 		for component_name, info in filter(lambda x: x[0] != blacklist, Globals.project_components_info.items()):
 			var = tk.BooleanVar()
 			self.state_buttons.append([component_name, var])
@@ -303,7 +318,7 @@ class FeatureControlScreen(object):
 		self.frame.pack()
 
 	def save_callback(self):
-		""" This function saves changes made to the components state """
+		""" This function saves changes made to the components state then closes the screen. """
 		#Commit changes to Globals.project_components_info
 		global main
 		for name,state_var in self.state_buttons:
@@ -322,11 +337,12 @@ class FeatureControlScreen(object):
 		self.master.destroy()
 
 	def switch_to_edit_blacklist_screen(self):
-		""" This function is responsible for the functionality of Turn On\Off button """
+		""" This function opens the EditBlacklist screen. """
 		s = tk.Toplevel(self.master)
 		BlacklistScreen(s)	
 
 	def exit(self):
+		""" Closes the screen """
 		self.master.destroy()
 
 
@@ -434,8 +450,9 @@ class MainScreen(object):
 		else:
 			self.project_state.set('Turn On')
 	
-
+# This class represents a popup window which requests the sudo password and verifies its correctness for later use.
 class SudoScreen(object):
+
 	def __init__(self,master):
 		self.master = master
 		self.master.title("Secure My Tux")
@@ -458,6 +475,8 @@ class SudoScreen(object):
 		self.master.protocol("WM_DELETE_WINDOW", self.exit_callback)
 
 	def save_sudo_password(self):
+		''' This function check if the sudo password is correct. If so it closes the sudo screen and switches to the MainScreen.
+		Otherwise shows invalid password error and wait for a new one. '''
 		global sudoPassword
 		isCorrect = True
 		sudoPassword = self.entry.get()
@@ -476,6 +495,7 @@ class SudoScreen(object):
 			self.error_label.pack()
 
 	def exit_callback(self):
+		''' Close the screen '''
 		self.master.quit()
 		
 		
@@ -531,7 +551,6 @@ def get_normal_date(d):
     perfect_date['min'] = needed_date_splitted[4]
     perfect_date['sec'] = needed_date_splitted[5]
 
-
     return perfect_date
     
 
@@ -550,6 +569,7 @@ def log_contains_ip_or_mac(l):
 
 
 def read_logs():
+	''' This function reads all of the module logs from /var/log/smt '''
     global logs_data
     logs_data_temp={}
     smt_dir = '/var/log/smt'
@@ -635,6 +655,7 @@ def search_in_logs(key,value):
                     ans.append(log)
     return ans
 
+#Gets a search key and returns all options
 def get_all_kinds_of(key):
     global logs_data
     all_types = []
@@ -670,13 +691,7 @@ def get_all_logs_by_date(time_part):
                 all_types.append(log)
     return all_types                        
 
-"""
-1. Delete previous logs_data
-2. Kill Logger
-3. Delete all log files
-4. Clear dmesg
-5. Run Logger again
-"""
+# Deletes all logs in /var/log/smt
 def delete_all_logs():
 
     global logs_data,sudoPassword
@@ -712,6 +727,7 @@ def is_in_danger(): #This function should be checked!
         return None    
 
 contin = True
+# uses read_logs and is_in_danger to read the logs every RUN_EVERY and logs if danger is detected 
 def readEveryNSeconds():
     global RUN_EVERY,contin,logs_data
     if contin:
@@ -753,6 +769,7 @@ def main():
 	sudoPassword = ''
 	master = tk.Tk()
 
+	# check if we have sudo permissions
 	trial = Popen(['echo '' | sudo -S echo successful_login'], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 	out,err = trial.communicate()
 	if 'Sorry' in err:
@@ -760,6 +777,7 @@ def main():
 	else:
 		MainScreen(master)
 
+	# Run gui
 	master.mainloop()
 	master.destroy()
 

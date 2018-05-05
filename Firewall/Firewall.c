@@ -56,7 +56,9 @@ int __init main(void)
 	return 0;
 }
 
-
+/* This function is responsible for restoring machine state to what it was before running 'main'.
+It unregisters netfilter hooks, and cleans the arp detector, dos detector and blacklist memory.
+*/
 void __exit cleanup(void)
 {
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,13,0)

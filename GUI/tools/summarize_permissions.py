@@ -12,7 +12,7 @@ def split_to_strings(data):
         
 
 def printable_list(data):
-	""" Get a list and print it """
+	""" Get a list and compose it into one string"""
 	s = ''
 
 	for val in data:
@@ -31,7 +31,7 @@ def perms(users):
 		(out, err) = dmesg.communicate()
 		name, gid, groups = out.replace('\n','').split(' ')#split the id result into uid, gid, groups
 	    
-		# print the information
+		# build the information as one string to return
 		res += '[***]USERNAME:'
 		names = split_to_strings(get_pair_value(name))
 		res += printable_list(names)

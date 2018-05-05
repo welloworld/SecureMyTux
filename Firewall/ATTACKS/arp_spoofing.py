@@ -4,7 +4,7 @@ import os
 import sys
 import threading
 
-os.system("echo 1 > /proc/sys/net/ipv4/ip_forward") #Turn off forwarding,
+os.system("echo 1 > /proc/sys/net/ipv4/ip_forward") #Turn on forwarding,
 
 target_ip    = "192.168.43.41"
 gateway_ip   = "192.168.43.1"
