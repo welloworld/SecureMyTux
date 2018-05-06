@@ -304,7 +304,12 @@ class FeatureControlScreen(object):
 		label.grid(row = cur_row, sticky = 'w')
 		self.addr_input = tk.Entry(self.frame, width=10)
 		self.addr_input.grid(row = cur_row, sticky = 'e')
-		
+
+		cur_row += 1
+		self.dhcp_error_text = tk.StringVar()
+		dhcp_input_error_label = tk.Label(self.frame, textvariable = self.dhcp_error_text)
+		dhcp_input_error_label.grid(row = cur_row)
+
 		# create save button in screen
 		cur_row += 1
 		save_button = tk.Button(self.frame, text = 'Save changes', command = self.save_callback, width = Globals.button_width, height = Globals.button_height)
@@ -321,20 +326,27 @@ class FeatureControlScreen(object):
 		""" This function saves changes made to the components state then closes the screen. """
 		#Commit changes to Globals.project_components_info
 		global main
+		close_window = True
 		for name,state_var in self.state_buttons:
 			Globals.project_components_info[name][power_state_on] = state_var.get()
 		
 		dhcp = self.addr_input.get()
-		Globals.project_components_info[RDHCP][dhcp_server] = dhcp if is_ip(dhcp) else ''
-
-
+		if is_ip(dhcp):
+			Globals.project_components_info[RDHCP][dhcp_server] = dhcp
+		else:
+			Globals.project_components_info[RDHCP][dhcp_server] = ''
+			if Globals.project_components_info[RDHCP][power_state_on] == True:
+				close_window = False
+			Globals.project_components_info[RDHCP][power_state_on] = False
+			self.dhcp_error_text.set('Invalid ip address.')
+		
 		#saves the configuration 
 		Manager.save_state_conf()
 		
+		if close_window:
 		#Restarts the project with the new settings
-		Manager.restart_project(main)
-		
-		self.master.destroy()
+			Manager.restart_project(main)
+			self.master.destroy()
 
 	def switch_to_edit_blacklist_screen(self):
 		""" This function opens the EditBlacklist screen. """
