@@ -63,7 +63,7 @@ void string_to_blacklist(char str[], int len)
 			}
 			else
 			{
-				dmesg_blacklist("Trying MAC to the blacklist: [%02x:%02x:%02x:%02x:%02x:%02x]\n",curr_addr[0],curr_addr[1],curr_addr[2],curr_addr[3],curr_addr[4],curr_addr[5]);
+				//dmesg_blacklist("Trying MAC to the blacklist: [%02x:%02x:%02x:%02x:%02x:%02x]\n",curr_addr[0],curr_addr[1],curr_addr[2],curr_addr[3],curr_addr[4],curr_addr[5]);
 				// add the address to the mac_list
 				append_to_blacklist(curr_addr, MAC_ALEN);
 				for(j=0;j<MAC_ALEN;j++)

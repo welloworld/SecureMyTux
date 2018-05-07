@@ -84,7 +84,14 @@ while True:
 		if MODULE_SIGNATURE in line:
 			post_cut = line[line.find(']') + 2:]
 			time = line[line.find('['):line.find(']')+1]
-			relevent_logs.append('%s-%s' % (post_cut[len(MODULE_SIGNATURE):],time)) #The message is first because the time will destory the next section of slicing the logs by components
+                        new_time=''
+                        for ch in time:
+                            if ch == ' ':
+                                if not new_time[-1] == ' ':
+                                    new_time += ch
+                            else:
+                                new_time += ch
+                        relevent_logs.append('%s-%s' % (post_cut[len(MODULE_SIGNATURE):],new_time)) #The message is first because the time will destory the next section of slicing the logs by components
 
 	for log in relevent_logs:
 		if FIREWALL_ARP in log:
@@ -125,15 +132,15 @@ while True:
 
 
 	for key, log in logs_by_affiliation.iteritems():
-		str = ''
+		st = ''
 		for line in log:
-			str += line + '\n'
+			st += line + '\n'
 
 		if not os.path.exists(LOGS_DIR):
 			os.system('mkdir ' + LOGS_DIR)
 
 		with open(LOGS_DIR + '/' + key, 'a+') as f:
-			f.write(str)
+			f.write(st)
 
 		# reset logs_by_affiliation
 		logs_by_affiliation[key] = []

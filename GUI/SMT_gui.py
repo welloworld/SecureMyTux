@@ -148,7 +148,7 @@ class SmtLogsScreen(object):
 			info = logs_data
 			if type(info) == dict:
 				for k,v in info.items():
-					mes += k + ' ( %d Logs )' % (len(v)) + ':\n'
+					mes += k + ' ( ~ %d Logs )' % (len(v)) + ':\n'
 					mes += getLogsAsStr(v)
 					mes = mes[:-1] + '\n'
 		else:# Sort option chosen
@@ -175,6 +175,7 @@ def getLogsAsStr(info):
 
     global CHARACTERS_IN_LINE
     mes = ''
+
     t_list = []
     for l in info: #For log in list of log
         temp=''
@@ -598,7 +599,6 @@ def read_logs():
                 f = open( smt_dir + '/' + fname,'r')
                 lines = f.readlines()
                 logs_data_temp[fname] = [line.replace('\n','').rsplit('-',1) for line in lines]
-                
         for name,logs in logs_data_temp.items():
             #print logs_data_temp[fname]
             logs_data[name] = []
