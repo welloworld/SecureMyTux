@@ -148,7 +148,7 @@ class SmtLogsScreen(object):
 			info = logs_data
 			if type(info) == dict:
 				for k,v in info.items():
-					mes += k + ' ( %d Logs )' % (len(v)) + ':\n'
+					mes += k + ' ( ~ %d Logs )' % (len(v)) + ':\n'
 					mes += getLogsAsStr(v)
 					mes = mes[:-1] + '\n'
 		else:# Sort option chosen
@@ -175,6 +175,7 @@ def getLogsAsStr(info):
 
     global CHARACTERS_IN_LINE
     mes = ''
+
     t_list = []
     for l in info: #For log in list of log
         temp=''
@@ -462,6 +463,27 @@ class MainScreen(object):
 		else:
 			self.project_state.set('Turn On')
 	
+
+def filter_command(c):
+    """
+    This function filters a bash command
+    Input:
+        command
+    Output:
+        Filtered command
+    """
+    not_filter = ['\\']
+    filtered = ''
+    print '(%s)' % (c)
+    for i in c:
+        if not i.isdigit() and not i.isalpha() and not i in not_filter:
+            filtered += '\\' + i
+        else:    
+            filtered += i
+    print '(%s)' % (filtered)
+    return filtered    
+
+
 # This class represents a popup window which requests the sudo password and verifies its correctness for later use.
 class SudoScreen(object):
 
@@ -493,6 +515,7 @@ class SudoScreen(object):
 		isCorrect = True
 		sudoPassword = self.entry.get()
 		
+                sudoPassword = filter_command(sudoPassword)
 		#try password
 		trial = Popen(['echo %s | sudo -S echo sucessful_login' % (sudoPassword)], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 		out,err = trial.communicate()
@@ -598,7 +621,6 @@ def read_logs():
                 f = open( smt_dir + '/' + fname,'r')
                 lines = f.readlines()
                 logs_data_temp[fname] = [line.replace('\n','').rsplit('-',1) for line in lines]
-                
         for name,logs in logs_data_temp.items():
             #print logs_data_temp[fname]
             logs_data[name] = []
