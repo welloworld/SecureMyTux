@@ -463,6 +463,25 @@ class MainScreen(object):
 		else:
 			self.project_state.set('Turn On')
 	
+
+def filter_command(c):
+    """
+    This function filters a bash command
+    Input:
+        command
+    Output:
+        Filtered command
+    """
+    not_filter = ['/']
+    filtered = ''
+    for i in c:
+        if not i.isdigit() and not i.isalpha() and not i in not_filter:
+            filtered += '\\' + i
+        else:    
+            filtered += i
+    return filtered    
+
+
 # This class represents a popup window which requests the sudo password and verifies its correctness for later use.
 class SudoScreen(object):
 
@@ -494,6 +513,7 @@ class SudoScreen(object):
 		isCorrect = True
 		sudoPassword = self.entry.get()
 		
+                sudoPassword = filter_command(sudoPassword)
 		#try password
 		trial = Popen(['echo %s | sudo -S echo sucessful_login' % (sudoPassword)], shell=True,stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 		out,err = trial.communicate()
