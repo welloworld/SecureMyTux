@@ -1,1 +1,1 @@
-/home/welloworld/Desktop/SecureMyTux/Logger/Logger.py
+/home/osboxes/SecureMyTux/Logger/Logger.py

@@ -1,8 +1,8 @@
-cmd_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := gcc -Wp,-MD,/home/welloworld/Desktop/SecureMyTux/Firewall/.fw.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include  -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -Iubuntu/include  -D__KERNEL__ -fno-pie -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -fno-PIE -fno-pie -no-pie -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_AVX512=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -DRETPOLINE -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-int-in-bool-context -O2 --param=allow-store-data-races=0 -DCC_HAVE_ASM_GOTO -Wframe-larger-than=1024 -fstack-protector-strong -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-var-tracking-assignments -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init  -DKBUILD_BASENAME='"fw.mod"'  -DKBUILD_MODNAME='"fw"' -DMODULE  -c -o /home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o /home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.c
+cmd_/home/osboxes/SecureMyTux/Firewall/fw.mod.o := gcc -Wp,-MD,/home/osboxes/SecureMyTux/Firewall/.fw.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include  -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -Iubuntu/include  -D__KERNEL__ -fno-pie -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -fno-PIE -fno-pie -no-pie -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_AVX512=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-int-in-bool-context -O2 --param=allow-store-data-races=0 -DCC_HAVE_ASM_GOTO -Wframe-larger-than=1024 -fstack-protector-strong -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-var-tracking-assignments -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init  -DKBUILD_BASENAME='"fw.mod"'  -DKBUILD_MODNAME='"fw"' -DMODULE  -c -o /home/osboxes/SecureMyTux/Firewall/fw.mod.o /home/osboxes/SecureMyTux/Firewall/fw.mod.c
 
-source_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := /home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.c
+source_/home/osboxes/SecureMyTux/Firewall/fw.mod.o := /home/osboxes/SecureMyTux/Firewall/fw.mod.c
 
-deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
+deps_/home/osboxes/SecureMyTux/Firewall/fw.mod.o := \
     $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
     $(wildcard include/config/modules.h) \
@@ -107,7 +107,6 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
   arch/x86/include/asm/disabled-features.h \
     $(wildcard include/config/x86/intel/mpx.h) \
     $(wildcard include/config/x86/intel/memory/protection/keys.h) \
-    $(wildcard include/config/page/table/isolation.h) \
   include/asm-generic/bitops/const_hweight.h \
   include/asm-generic/bitops/le.h \
   arch/x86/include/uapi/asm/byteorder.h \
@@ -285,7 +284,6 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
   include/asm-generic/atomic-long.h \
   include/linux/static_key.h \
   arch/x86/include/asm/paravirt.h \
-    $(wildcard include/config/debug/entry.h) \
   arch/x86/include/asm/frame.h \
   arch/x86/include/asm/special_insns.h \
   arch/x86/include/asm/fpu/types.h \
@@ -312,6 +310,7 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
   include/asm-generic/qspinlock.h \
   arch/x86/include/asm/qrwlock.h \
   include/asm-generic/qrwlock.h \
+    $(wildcard include/config/cpu/big/endian.h) \
   include/linux/rwlock.h \
   include/linux/spinlock_api_smp.h \
     $(wildcard include/config/inline/spin/lock.h) \
@@ -488,7 +487,6 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
     $(wildcard include/config/provide/ohci1394/dma/init.h) \
     $(wildcard include/config/pci/mmconfig.h) \
     $(wildcard include/config/x86/intel/mid.h) \
-    $(wildcard include/config/acpi/apei/ghes.h) \
     $(wildcard include/config/intel/txt.h) \
   arch/x86/include/asm/acpi.h \
     $(wildcard include/config/acpi/apei.h) \
@@ -591,7 +589,6 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
     $(wildcard include/config/ppc64.h) \
   include/linux/rbtree_latch.h \
   arch/x86/include/asm/module.h \
-    $(wildcard include/config/unwinder/orc.h) \
     $(wildcard include/config/m486.h) \
     $(wildcard include/config/m586.h) \
     $(wildcard include/config/m586tsc.h) \
@@ -618,10 +615,9 @@ deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  arch/x86/include/asm/orc_types.h \
   include/linux/vermagic.h \
   include/generated/utsrelease.h \
 
-/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o: $(deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o)
+/home/osboxes/SecureMyTux/Firewall/fw.mod.o: $(deps_/home/osboxes/SecureMyTux/Firewall/fw.mod.o)
 
-$(deps_/home/welloworld/Desktop/SecureMyTux/Firewall/fw.mod.o):
+$(deps_/home/osboxes/SecureMyTux/Firewall/fw.mod.o):
