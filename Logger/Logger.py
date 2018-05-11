@@ -125,15 +125,15 @@ while True:
 
 
 	for key, log in logs_by_affiliation.iteritems():
-		str = ''
+		string = ''
 		for line in log:
-			str += line + '\n'
+			string += line + '\n'
 
 		if not os.path.exists(LOGS_DIR):
 			os.system('mkdir ' + LOGS_DIR)
 
 		with open(LOGS_DIR + '/' + key, 'a+') as f:
-			f.write(str)
+			f.write(string)
 
 		# reset logs_by_affiliation
 		logs_by_affiliation[key] = []
