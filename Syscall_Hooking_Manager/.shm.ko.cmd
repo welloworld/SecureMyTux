@@ -1,1 +1,0 @@
-cmd_/home/osboxes/SecureMyTux/Syscall_Hooking_Manager/shm.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/osboxes/SecureMyTux/Syscall_Hooking_Manager/shm.ko /home/osboxes/SecureMyTux/Syscall_Hooking_Manager/shm.o /home/osboxes/SecureMyTux/Syscall_Hooking_Manager/shm.mod.o ;  true

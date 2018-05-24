@@ -1,1 +1,0 @@
-cmd_/home/osboxes/SecureMyTux/Firewall/fw.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/osboxes/SecureMyTux/Firewall/fw.ko /home/osboxes/SecureMyTux/Firewall/fw.o /home/osboxes/SecureMyTux/Firewall/fw.mod.o ;  true

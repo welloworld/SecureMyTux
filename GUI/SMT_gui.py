@@ -478,7 +478,7 @@ def filter_command(c):
     for i in c:
         if not i.isdigit() and not i.isalpha() and not i in not_filter:
             filtered += '\\' + i
-        else:    
+        else:
             filtered += i
     print '(%s)' % (filtered)
     return filtered    
