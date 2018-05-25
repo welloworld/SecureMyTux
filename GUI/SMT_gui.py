@@ -451,9 +451,10 @@ class MainScreen(object):
 		print '[---] GUI destroyed'
 
 		#self.logger.kill()
-                pid = os.getpgid(self.logger.pid)
-                print pid
-                os.killpg(pid , signal.SIGTERM)
+                runCommand('''kill $(ps -aux | grep "Logger" | awk '{print $2}')''')
+                #pid = os.getpgid(self.logger.pid)
+                #print pid
+                #os.killpg(pid , signal.SIGTERM)
 		print '[---] Logger removed'
 
 	def flip_switch_button(self):

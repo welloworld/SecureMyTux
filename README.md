@@ -27,7 +27,7 @@ Mini-Guide:
 	
 	Next, enter admin's password in order to have permissions to run things such as kernel-module, read logs etc. In some cases you won't asked for password because the current screen has already saved it.
 
-	Then, You have an 5 Options:
+	Then, You have a screen with 5 Options:
 		* Turn On/Off the system
 		
         * Show logs option - There you can show all logs (by empty textbox and `show all` select's option), delete all logs and search logs by a parameter as follows:
