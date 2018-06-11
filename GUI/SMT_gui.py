@@ -106,7 +106,7 @@ class SmtLogsScreen(object):
 
 		self.frame = tk.Frame(self.master)
 
-		self.options = ['Show all','uid','pid','mac','ip','syscall_name','path','subcategory','date']
+		self.options = ['Show all','uid','pid','mac','ip','syscall_name','path','subcategory']#,'date']
 
 		cur_column = 0
 		# Create the sort menu
