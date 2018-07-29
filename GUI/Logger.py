@@ -1,1 +1,1 @@
-/home/nevo/Desktop/SecureMyTux/Logger/Logger.py
+/home/magshimim/Desktop/SecureMyTux/Logger/Logger.py

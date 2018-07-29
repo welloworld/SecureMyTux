@@ -9,8 +9,8 @@
 #include <linux/in.h>
 #include <linux/file.h>//needed?
 //#include <linux/lockdep.h>//needed? - for using task_struct
-//#include <linux/fdtable.h>
-
+#include <linux/fdtable.h>
+#include <linux/fs.h>
 #include <linux/unistd.h>
 #include <asm/syscall.h>
 #include "../Strings/string_functions.h"
