@@ -8,22 +8,6 @@ This is our video that describes how the project works: https://www.youtube.com/
 Features:
 	*
 
-Must-Have:
-	* A Linux system (Ubuntu should be good idea) with Kernel-Verision of 4+
-	
-	* Connection to the internet - for showing many attacks and defenses
-	
-    * package 'gcc' - sudo apt-get install gcc
-	
-    * python2 - sudo apt install python
-	
-    * package 'make' - sudo apt-get install make
-	
-    * python package 'tkinter' - sudo apt-get install python-tk
-	
-    * Python package ‘scapy’ - sudo pip install scapy
-
-
 ## Build & Run ##
 1. `./SMT_build.sh`
 2. `./SMT_run.sh`, and enter password (for inserting a kernel module).
