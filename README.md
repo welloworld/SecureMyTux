@@ -5,9 +5,6 @@ Welcome to the `SecureMyTux` project for defending your Linux from many networks
 
 This is our video that describes how the project works: https://www.youtube.com/watch?v=1cjJmoQH8QI
 
-Features:
-	*
-
 ## Build & Run ##
 1. `./SMT_build.sh`
 2. `./SMT_run.sh`, and enter password (for inserting a kernel module).
